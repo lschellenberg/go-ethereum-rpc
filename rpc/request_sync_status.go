@@ -7,6 +7,7 @@ import (
 )
 
 type SyncStatus struct {
+	IsSyncing     bool  `json:"isSyncing"`
 	StartingBlock int64 `json:"startingBlock"`
 	HighestBlock  int64 `json:"highestBlock"`
 	CurrentBlock  int64 `json:"currentBlock"`
@@ -27,6 +28,11 @@ func (client *Client) RequestSyncStatus(method string, params ...interface{}) (*
 
 	if response.Result == nil {
 		return nil, fmt.Errorf("response returned without error but no transaction found for %v", params)
+	}
+
+	switch response.Result.(type) {
+	case bool:
+		return &SyncStatus{IsSyncing: false}, nil
 	}
 
 	js, err := json.Marshal(response.Result)
@@ -62,6 +68,7 @@ func (ssr *SyncStatusRaw) ToSyncStatus() (*SyncStatus, error) {
 	}
 
 	return &SyncStatus{
+		IsSyncing:     true,
 		StartingBlock: startingBlock.Int64(),
 		HighestBlock:  highestBlock.Int64(),
 		CurrentBlock:  currentBlock.Int64(),

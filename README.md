@@ -55,8 +55,8 @@ then access Ethereum's RPC method _module_function_ (e.g. __eth_getBalance__) by
 - [ ] [eth_getUncleCountByBlockHash](https://wiki.parity.io/JSONRPC-eth-module#eth_getunclecountbyblockhash)
 - [ ] [eth_getUncleCountByBlockNumber](https://wiki.parity.io/JSONRPC-eth-module#eth_getunclecountbyblocknumber)
 - [ ] [eth_getWork](https://wiki.parity.io/JSONRPC-eth-module#eth_getwork)
-- [ ] [eth_hashrate](https://wiki.parity.io/JSONRPC-eth-module#eth_hashrate)
-- [ ] [eth_mining](https://wiki.parity.io/JSONRPC-eth-module#eth_mining)
+- [x] [eth_hashrate](https://wiki.parity.io/JSONRPC-eth-module#eth_hashrate)
+- [x] [eth_mining](https://wiki.parity.io/JSONRPC-eth-module#eth_mining)
 - [ ] [eth_newBlockFilter](https://wiki.parity.io/JSONRPC-eth-module#eth_newblockfilter)
 - [ ] [eth_newFilter](https://wiki.parity.io/JSONRPC-eth-module#eth_newfilter)
 - [ ] [eth_newPendingTransactionFilter](https://wiki.parity.io/JSONRPC-eth-module#eth_newpendingtransactionfilter)
@@ -69,3 +69,13 @@ then access Ethereum's RPC method _module_function_ (e.g. __eth_getBalance__) by
 - [ ] [eth_submitWork](https://wiki.parity.io/JSONRPC-eth-module#eth_submitwork)
 - [x] [eth_syncing](https://wiki.parity.io/JSONRPC-eth-module#eth_syncing)
 - [x] [eth_uninstallFilter](https://wiki.parity.io/JSONRPC-eth-module#eth_uninstallfilter)
+
+### Personal
+
+- [x] [personal_listAccounts](https://wiki.parity.io/JSONRPC-eth-module#personal_listaccounts)
+- [x] [personal_newAccount](https://wiki.parity.io/JSONRPC-eth-module#personal_newaccount)
+- [ ] [personal_sendTransaction](https://wiki.parity.io/JSONRPC-eth-module#personal_sendtransaction)
+- [ ] [personal_signTransaction](https://wiki.parity.io/JSONRPC-eth-module#personal_signtransaction)
+- [ ] [personal_unlockAccount](https://wiki.parity.io/JSONRPC-eth-module#personal_unlockaccount)
+- [ ] [personal_sign](https://wiki.parity.io/JSONRPC-eth-module#personal_sign)
+- [ ] [personal_ecRecover](https://wiki.parity.io/JSONRPC-eth-module#personal_ecrecover)

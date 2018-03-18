@@ -8,12 +8,38 @@ import (
 	"github.com/Leondroids/gox"
 )
 
+type TestConfig struct {
+	address         string
+	protocolVersion int64
+	coinbase        string
+	hashrate        int64
+	mining          bool
+}
 
-const address = InfuraEndpoint//RPCEndpointLocalHost
+func config() *TestConfig {
+	return LocalhostConfig()
+}
+
+func InfuraConfig() *TestConfig {
+	return &TestConfig{
+		address:         InfuraEndpoint,
+		protocolVersion: 63,
+	}
+}
+
+func LocalhostConfig() *TestConfig {
+	return &TestConfig{
+		address:         RPCEndpointLocalHost,
+		protocolVersion: 99,
+		coinbase:        "0x44a139cc0aed5eb5dbc6838b284fb051cad72dcb",
+		hashrate:        0,
+		mining:          false,
+	}
+}
 
 func TestRPCClient_EthAccounts(t *testing.T) {
 	expectedStringList := []string{}
-	s, err := NewRPCClient(address).Eth.Accounts()
+	s, err := NewRPCClient(config().address).Eth.Accounts()
 
 	if err != nil {
 		t.Error(err)
@@ -27,7 +53,7 @@ func TestRPCClient_EthAccounts(t *testing.T) {
 
 func TestRPCClient_EthBlockNumber(t *testing.T) {
 	var expectedBlockNumberMin int64 = 3000000
-	block, err := NewRPCClient(address).Eth.BlockNumber()
+	block, err := NewRPCClient(config().address).Eth.BlockNumber()
 
 	if err != nil {
 		t.Error(err)
@@ -39,8 +65,23 @@ func TestRPCClient_EthBlockNumber(t *testing.T) {
 	}
 }
 
+func TestEth_Coinbase(t *testing.T) {
+	coinbase, err := NewRPCClient(config().address).Eth.Coinbase()
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	expectedCoinbase := config().coinbase
+
+	if coinbase.String() != expectedCoinbase {
+		t.Errorf("wrong coinbase [Expected: %v, Actual: %v]", expectedCoinbase, coinbase)
+	}
+}
+
 func TestEth_GasPrice(t *testing.T) {
-	gasprice, err := NewRPCClient(address).Eth.GasPrice()
+	gasprice, err := NewRPCClient(config().address).Eth.GasPrice()
 
 	if err != nil {
 		t.Error(err)
@@ -57,7 +98,7 @@ func TestEth_GasPrice(t *testing.T) {
 }
 
 func TestRPCClient_GetBalance(t *testing.T) {
-	balance, err := NewRPCClient(address).Eth.GetBalance("0x6Da385A99A8799c986F215dDc14e8028eF0b8baF", types.QuantityLatest())
+	balance, err := NewRPCClient(config().address).Eth.GetBalance("0x6Da385A99A8799c986F215dDc14e8028eF0b8baF", types.QuantityLatest())
 
 	if err != nil {
 		t.Error(err)
@@ -79,7 +120,7 @@ func TestRPCClient_GetBalance(t *testing.T) {
 
 func TestRPCClient_GetBlockByHashWithTransactionHash(t *testing.T) {
 	expectedBlock := getBlock_4ad331()
-	result, err := NewRPCClient(address).Eth.GetBlockByHash(expectedBlock.Hash.String(), false)
+	result, err := NewRPCClient(config().address).Eth.GetBlockByHash(expectedBlock.Hash.String(), false)
 
 	if err != nil {
 		t.Error(err)
@@ -96,7 +137,7 @@ func TestRPCClient_GetBlockByHashWithTransactionFull(t *testing.T) {
 	expectedBlock.TransactionsFull = HashToEtherTransactionFull(expectedBlock.Transactions)
 	expectedBlock.Transactions = nil
 
-	result, err := NewRPCClient(address).Eth.GetBlockByHash(expectedBlock.Hash.String(), true)
+	result, err := NewRPCClient(config().address).Eth.GetBlockByHash(expectedBlock.Hash.String(), true)
 
 	if err != nil {
 		t.Error(err)
@@ -119,7 +160,7 @@ func TestRPCClient_GetBlockByHashWithTransactionFull(t *testing.T) {
 
 func TestRPCClient_GetBlockByNumberWithTransactionHash(t *testing.T) {
 	expectedBlock := getBlock_4ad331()
-	result, err := NewRPCClient(address).Eth.GetBlockByNumber(expectedBlock.Number, false)
+	result, err := NewRPCClient(config().address).Eth.GetBlockByNumber(expectedBlock.Number, false)
 
 	if err != nil {
 		t.Error(err)
@@ -137,7 +178,7 @@ func TestRPCClient_GetBlockByNumberWithTransactionFull(t *testing.T) {
 	expectedBlock.Transactions = nil
 	// 2 first full transaction
 
-	result, err := NewRPCClient(address).Eth.GetBlockByNumber(expectedBlock.Number, true)
+	result, err := NewRPCClient(config().address).Eth.GetBlockByNumber(expectedBlock.Number, true)
 
 	if err != nil {
 		t.Error(err)
@@ -162,7 +203,7 @@ func TestRPCClient_GetBlockByNumberWithTransactionFull(t *testing.T) {
 func TestEth_GetBlockTransactionCountByHash(t *testing.T) {
 	expectedBlock := getBlock_4ad331()
 
-	result, err := NewRPCClient(address).Eth.GetBlockTransactionCountByHash(expectedBlock.Hash.String())
+	result, err := NewRPCClient(config().address).Eth.GetBlockTransactionCountByHash(expectedBlock.Hash.String())
 
 	if err != nil {
 		t.Error(err)
@@ -178,7 +219,7 @@ func TestEth_GetBlockTransactionCountByHash(t *testing.T) {
 func TestEth_GetBlockTransactionCountByNumber(t *testing.T) {
 	expectedBlock := getBlock_4ad331()
 
-	result, err := NewRPCClient(address).Eth.GetBlockTransactionCountByNumber(expectedBlock.Number)
+	result, err := NewRPCClient(config().address).Eth.GetBlockTransactionCountByNumber(expectedBlock.Number)
 
 	if err != nil {
 		t.Error(err)
@@ -193,7 +234,7 @@ func TestEth_GetBlockTransactionCountByNumber(t *testing.T) {
 // GetTransactionByBlockHashAndIndex
 func TestEth_GetTransactionByBlockHashAndIndex(t *testing.T) {
 	expected := getTransaction_99192()
-	result, err := NewRPCClient(address).Eth.GetTransactionByBlockHashAndIndex(expected.BlockHash.String(), expected.TransactionIndex)
+	result, err := NewRPCClient(config().address).Eth.GetTransactionByBlockHashAndIndex(expected.BlockHash.String(), expected.TransactionIndex)
 
 	if err != nil {
 		t.Error(err)
@@ -208,7 +249,7 @@ func TestEth_GetTransactionByBlockHashAndIndex(t *testing.T) {
 // GetTransactionByBlockNumberAndIndex
 func TestEth_GetTransactionByBlockNumberAndIndex(t *testing.T) {
 	expected := getTransaction_99192()
-	result, err := NewRPCClient(address).Eth.GetTransactionByBlockNumberAndIndex(expected.BlockNumber, expected.TransactionIndex)
+	result, err := NewRPCClient(config().address).Eth.GetTransactionByBlockNumberAndIndex(expected.BlockNumber, expected.TransactionIndex)
 
 	if err != nil {
 		t.Error(err)
@@ -222,7 +263,7 @@ func TestEth_GetTransactionByBlockNumberAndIndex(t *testing.T) {
 
 func TestEth_GetTransactionByHash(t *testing.T) {
 	expected := getTransaction_99192()
-	result, err := NewRPCClient(address).Eth.GetTransactionByHash(expected.Hash.String())
+	result, err := NewRPCClient(config().address).Eth.GetTransactionByHash(expected.Hash.String())
 
 	if err != nil {
 		t.Error(err)
@@ -235,7 +276,7 @@ func TestEth_GetTransactionByHash(t *testing.T) {
 }
 
 func TestEth_GetTransactionCount(t *testing.T) {
-	result, err := NewRPCClient(address).Eth.GetTransactionCount("0xfdc795aa0c3b4b30bca8275d61f8dfbd49d9e912", types.QuantityBlock(5212393))
+	result, err := NewRPCClient(config().address).Eth.GetTransactionCount("0xfdc795aa0c3b4b30bca8275d61f8dfbd49d9e912", types.QuantityBlock(5212393))
 
 	if err != nil {
 		t.Error(err)
@@ -252,7 +293,7 @@ func TestEth_GetTransactionCount(t *testing.T) {
 func TestEth_GetTransactionReceipt(t *testing.T) {
 	trans := getTransactionReceipt_99192()
 
-	result, err := NewRPCClient(address).Eth.GetTransactionReceipt(trans.TransactionHash.String())
+	result, err := NewRPCClient(config().address).Eth.GetTransactionReceipt(trans.TransactionHash.String())
 
 	if err != nil {
 		t.Error(err)
@@ -267,25 +308,59 @@ func TestEth_GetTransactionReceipt(t *testing.T) {
 	}
 }
 
-func TestEth_ProtocolVersion(t *testing.T) {
-	result, err := NewRPCClient(address).Eth.ProtocolVersion()
+func TestEth_Hashrate(t *testing.T) {
+	hashrate, err := NewRPCClient(config().address).Eth.Hashrate()
 
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	if result != 99 {
-		t.Errorf("protocol version wrong, [Expected: %v, Actual: %v]", 99, result)
+	expectedHashrate := config().hashrate
+
+	if hashrate != expectedHashrate {
+		t.Errorf("wrong hashrate [Expected: %v, Actual: %v]", expectedHashrate, hashrate)
+	}
+}
+
+func TestEth_Mining(t *testing.T) {
+	mining, err := NewRPCClient(config().address).Eth.Mining()
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	expectedMining := config().mining
+
+	if mining != expectedMining {
+		t.Errorf("wrong mining [Expected: %v, Actual: %v]", expectedMining, mining)
+	}
+
+}
+
+func TestEth_ProtocolVersion(t *testing.T) {
+	result, err := NewRPCClient(config().address).Eth.ProtocolVersion()
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if result != config().protocolVersion {
+		t.Errorf("protocol version wrong, [Expected: %v, Actual: %v]", config().protocolVersion, result)
 		return
 	}
 }
 
 func TestEth_Syncing(t *testing.T) {
-	result, err := NewRPCClient(address).Eth.Syncing()
+	result, err := NewRPCClient(config().address).Eth.Syncing()
 
 	if err != nil {
 		t.Error(err)
+		return
+	}
+	if !result.IsSyncing {
 		return
 	}
 
@@ -304,7 +379,7 @@ func TestEth_Syncing(t *testing.T) {
 }
 
 func TestEth_UninstallFilter(t *testing.T) {
-	result, err := NewRPCClient(address).Eth.UninstallFilter("0x12")
+	result, err := NewRPCClient(config().address).Eth.UninstallFilter("0x12")
 
 	if err != nil {
 		t.Error(err)

@@ -42,6 +42,10 @@ func NewHexStringFromBytes(b []byte) *HexString {
 }
 
 func (hs HexString) String() string {
+	// Ethereum Nodes are representing 0 as "0x0"
+	if len(hs.value)== 0 {
+		return "0x0"
+	}
 	s := hex.EncodeToString(hs.value)
 
 	// trim
@@ -51,6 +55,11 @@ func (hs HexString) String() string {
 			pos = k
 			break
 		}
+	}
+
+	// Ethereum Nodes are representing 0 as "0x0"
+	if s == "00" {
+		return "0x0"
 	}
 
 	return "0x" + s[pos:]
@@ -82,7 +91,7 @@ func (hs *HexString) FromInt64(i int64) *HexString {
 			break
 		}
 	}
- 
+
 	return hs.FromBytes(b[pos:])
 }
 
@@ -143,6 +152,16 @@ func HexStringListFromString(s []string) ([]HexString, error) {
 	}
 
 	return hsl, nil
+}
+
+func HexStringListToStringList(s []HexString) ([]string) {
+	hsl := make([]string, len(s))
+
+	for k, v := range s {
+		hsl[k] = v.String()
+	}
+
+	return hsl
 }
 
 func (hs1 HexString) IsEqual(hs2 *HexString) bool {

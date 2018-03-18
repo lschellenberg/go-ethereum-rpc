@@ -90,10 +90,11 @@ func (eth Eth) Call(params *EthCallParams) (string, error) {
 /*
 	rpc method: "eth_coinbase"
 	returns string, the client coinbase address.
-	TODO
+
+	curl --data '{"method":"eth_coinbase","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
 */
-func (eth Eth) Coinbase(params *EthCallParams) (string, error) {
-	return "", NotImplemented
+func (eth Eth) Coinbase() (*types.HexString, error) {
+	return eth.client.RequestHexString(MethodCoinbase)
 }
 
 /*
@@ -210,8 +211,27 @@ eth_getUncleByBlockNumberAndIndex
 eth_getUncleCountByBlockHash
 eth_getUncleCountByBlockNumber
 eth_getWork
-eth_hashrate
-eth_mining
+*/
+/*
+	rpc method: "eth_hashrate"
+	Returns the number of hashes per second that the node is mining with.
+
+	curl --data '{"method":"eth_hashrate","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+*/
+func (eth Eth) Hashrate() (int64, error) {
+	return eth.client.RequestInt64(MethodHashrate)
+}
+/*
+	rpc method: "eth_mining"
+	Returns true if client is actively mining new blocks.
+
+	curl --data '{"method":"eth_mining","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+*/
+func (eth Eth) Mining() (bool, error) {
+	return eth.client.RequestBool(MethodMining)
+}
+/*
+TODO
 eth_newBlockFilter
 */
 

@@ -3,6 +3,7 @@ package rpc
 import (
 	"fmt"
 	"github.com/Leondroids/go-ethereum-rpc/types"
+	"github.com/Leondroids/gox"
 )
 
 /*
@@ -91,5 +92,53 @@ func (client *Client) RequestBool(method string, params ...interface{}) (bool, e
 	}
 
 	return val, nil
+}
 
+/*
+	Request HexString
+ */
+func (client *Client) RequestHexString(method string, params ...interface{}) (*types.HexString, error) {
+	response, err := checkRPCError(client.Call(method, params...))
+	if err != nil {
+		return nil, err
+	}
+
+	if response.Result == nil {
+		return nil, fmt.Errorf("m: %v, p: %v didn't return error but also no response", method, params)
+	}
+
+	val, ok := response.Result.(string)
+
+	if !ok {
+		return nil, fmt.Errorf("could not parse string from %v", response.Result)
+	}
+
+	return types.NewHexString(val)
+}
+/*
+	Request HexStringList
+ */
+func (client *Client) RequestHexStringList(method string, params ...interface{}) ([]types.HexString, error) {
+	response, err := checkRPCError(client.Call(method, params...))
+	if err != nil {
+		return nil, err
+	}
+
+	if response.Result == nil {
+		return nil, fmt.Errorf("m: %v, p: %v didn't return error but also no response", method, params)
+	}
+
+	val, ok := response.Result.([]interface{})
+
+	if !ok {
+		return nil, fmt.Errorf("could not parse string list from %v", response.Result)
+	}
+
+	sl, err := gox.StringListFromInterfaceList(val)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return types.HexStringListFromString(sl)
 }

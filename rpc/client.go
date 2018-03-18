@@ -77,6 +77,7 @@ type Client struct {
 	Web3            Web3
 	Eth             Eth
 	Net             Net
+	Personal        Personal
 }
 
 // NewRPCClient returns a new ParityRPCClient instance with default configuration (no custom headers, default http.Client, autoincrement ids).
@@ -93,6 +94,7 @@ func NewRPCClient(endpoint string) *Client {
 	client.Web3 = Web3{client: client}
 	client.Eth = Eth{client: client}
 	client.Net = Net{client: client}
+	client.Personal = Personal{client: client}
 
 	return client
 }
