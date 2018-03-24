@@ -198,6 +198,8 @@ func (eth Eth) GetTransactionCount(hash string, quantity *types.Quantity) (int64
 /*
 	rpc method: "eth_getTransactionReceipt"
 	Returns the number of transactions sent from an address.
+
+	curl --data '{"method":"eth_getTransactionReceipt","params":["0x9676244c3a233b19a025184ea406fc5765f53edee7afabd901b470adcdeb5720"],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
 */
 func (eth Eth) GetTransactionReceipt(hash string) (*types.EtherTransactionReceipt, error) {
 	return eth.client.RequestEtherTransactionReceipt(MethodGetTransactionReceipt, hash)
@@ -267,7 +269,8 @@ eth_submitWork
 
 /*
 	rpc method: "eth_syncing"
-	Uninstalls a filter with given id. Should always be called when watch is no longer needed. Additonally Filters timeout when they aren’t requested with eth_getFilterChanges for a period of time.
+	Returns an object with data about the sync status or false.
+	curl --data '{"method":"eth_syncing","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
 */
 func (eth Eth) Syncing() (*SyncStatus, error) {
 	return eth.client.RequestSyncStatus(MethodSyncing)

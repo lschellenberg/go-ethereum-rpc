@@ -106,18 +106,22 @@ func (raw *TransactionReceiptRaw) ToEtherTransactionReceipt() (*EtherTransaction
 		return nil, fmt.Errorf("error parsing blockHash, %v", err)
 	}
 	receipt.BlockHash = *bh
-	// From
-	from, err := new(EtherAddress).FromString(raw.From)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing from, %v", err)
+	// From parity doesnt give from
+	if raw.From != "" {
+		from, err := new(EtherAddress).FromString(raw.From)
+		if err != nil {
+			return nil, fmt.Errorf("error parsing from, %v", err)
+		}
+		receipt.From = *from
 	}
-	receipt.From = *from
-	// To
-	to, err := new(EtherAddress).FromString(raw.To)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing to, %v", err)
+	// To (parity doesnt give to)
+	if raw.To != "" {
+		to, err := new(EtherAddress).FromString(raw.To)
+		if err != nil {
+			return nil, fmt.Errorf("error parsing to, %v", err)
+		}
+		receipt.To = *to
 	}
-	receipt.To = *to
 	// CumulativeGasUsed
 	cgu, err := new(EtherValue).FromHexString(raw.CumulativeGasUsed)
 	if err != nil {
@@ -151,12 +155,13 @@ func (raw *TransactionReceiptRaw) ToEtherTransactionReceipt() (*EtherTransaction
 	// Logs              []EtherLogRaw `json:"logs"`
 	logs := make([]EtherLog, len(raw.Logs))
 	for k, v := range raw.Logs {
-		log, err := v.ToEtherLog()
+		elog, err := v.ToEtherLog()
 		if err != nil {
 			return nil, err
 		}
-		logs[k] = *log
+		logs[k] = *elog
 	}
+	receipt.Logs = logs
 
 	return receipt, nil
 }

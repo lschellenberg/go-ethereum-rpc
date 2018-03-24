@@ -1,0 +1,11 @@
+package processed
+
+import "testing"
+
+func TestERC20TransferLog_FromReceipt(t *testing.T) {
+	//from := "0x000000000000000000000000fbb1b73c4f0bda4f67dca266ce6ef42f520fbb98"
+	//to := "0x0000000000000000000000009e0f70dec65e4a62b5c4df1317f47fd2ef707d6c"
+	//data := "0x00000000000000000000000000000000000000000000000000245d0ec6557c00"
+	//
+
+}

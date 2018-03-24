@@ -156,5 +156,5 @@ type EtherLogRaw struct {
 	TransactionIndex string   `json:"transactionIndex"`
 	BlockHash        string   `json:"blockHash"`
 	LogIndex         string   `json:"logIndex"`
-	Removed          bool   `json:"removed"`
+	Removed          bool     `json:"removed"`
 }

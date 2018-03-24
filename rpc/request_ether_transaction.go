@@ -73,13 +73,13 @@ func (trans RPCEtherTransactionRaw) toEtherTransaction() (*types.EtherTransactio
 		return nil, err
 	}
 
-	gas, err := types.NewHexString(trans.Gas)
+	gas, err := types.NewEtherValue().FromHexString(trans.Gas)
 
 	if err != nil {
 		return nil, err
 	}
 
-	gasPrice, err := types.NewHexString(trans.GasPrice)
+	gasPrice, err := types.NewEtherValue().FromHexString(trans.GasPrice)
 
 	if err != nil {
 		return nil, err
@@ -143,8 +143,8 @@ func (trans RPCEtherTransactionRaw) toEtherTransaction() (*types.EtherTransactio
 		Hash:             *hash,
 		BlockHash:        *blockHash,
 		BlockNumber:      blockNumber.Int64(),
-		Gas:              *gas.BigInt(),
-		GasPrice:         *gasPrice.BigInt(),
+		Gas:              *gas,
+		GasPrice:         *gasPrice,
 		From:             *from,
 		To:               *to,
 		Nonce:            *nonce,
@@ -161,7 +161,6 @@ func (trans RPCEtherTransactionRaw) toEtherTransaction() (*types.EtherTransactio
 
 func (client *Client) RequestEtherTransactionReceipt(method string, params ...interface{}) (*types.EtherTransactionReceipt, error) {
 	response, err := checkRPCError(client.Call(method, params...))
-
 	if err != nil {
 		return nil, err
 	}

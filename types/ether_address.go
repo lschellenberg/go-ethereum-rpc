@@ -12,17 +12,24 @@ type EtherAddress struct {
 	value [EtherAddressLength]byte
 }
 
-func (ea EtherAddress) String() string {
-	s := hex.EncodeToString(ea.Bytes())
+func (ea *EtherAddress) ShortFormat() string {
+	return ea.String()[:8] + "..."
+}
 
+func (ea *EtherAddress) String() string {
+	s := hex.EncodeToString(ea.Bytes())
 	return "0x" + s
 }
 
-func (ea EtherAddress) HexString() *HexString {
+func (ea *EtherAddress) Hash() string {
+	return ea.String()
+}
+
+func (ea *EtherAddress) HexString() *HexString {
 	return NewHexStringFromBytes(ea.Bytes())
 }
 
-func (ea EtherAddress) Bytes() []byte {
+func (ea *EtherAddress) Bytes() []byte {
 	newb := make([]byte, EtherAddressLength)
 	copy(newb[:], ea.value[:])
 	return newb
@@ -58,4 +65,11 @@ func (ea *EtherAddress) FromStringOrNull(s string) (*EtherAddress, error) {
 
 func (ea1 *EtherAddress) IsEqual(ea2 *EtherAddress) bool {
 	return bytes.Compare(ea1.Bytes(), ea2.Bytes()) == 0
+}
+func (address *EtherAddress) From32ByteString(value string) (*EtherAddress, error) {
+	if len(value) != 64+2 {
+		return nil, fmt.Errorf("%v is not a 64 byte hex string", value)
+	}
+
+	return address.FromString(value[26:])
 }

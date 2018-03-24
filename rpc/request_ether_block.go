@@ -17,8 +17,13 @@ func (client *Client) RequestEtherBlock(method string, params ...interface{}) (*
 
 	response, err := checkRPCError(client.Call(method, params...))
 
+
 	if err != nil {
 		return nil, err
+	}
+
+	if response.Result == nil {
+		return nil, fmt.Errorf("response returned without error but no block found for %v. is block not synced yet?", params)
 	}
 
 	return getBlockFromResponse(response.Result, full)

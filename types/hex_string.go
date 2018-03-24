@@ -41,9 +41,25 @@ func NewHexStringFromBytes(b []byte) *HexString {
 	}
 }
 
+func (hs HexString) Hash() string {
+	// Ethereum Nodes are representing 0 as "0x0"
+	if len(hs.value) == 0 {
+		return "0x0"
+	}
+
+	s := hex.EncodeToString(hs.value)
+
+	// Ethereum Nodes are representing 0 as "0x0"
+	if s == "00" {
+		return "0x0"
+	}
+
+	return "0x" + s
+}
+
 func (hs HexString) String() string {
 	// Ethereum Nodes are representing 0 as "0x0"
-	if len(hs.value)== 0 {
+	if len(hs.value) == 0 {
 		return "0x0"
 	}
 	s := hex.EncodeToString(hs.value)

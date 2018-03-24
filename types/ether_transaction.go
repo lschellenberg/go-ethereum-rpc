@@ -3,15 +3,14 @@ package types
 import (
 	"errors"
 	"fmt"
-	"math/big"
 )
 
 type EtherTransaction struct {
 	Hash             HexString    `json:"hash"`
 	BlockHash        HexString    `json:"blockHash"`
 	BlockNumber      int64        `json:"blockNumber"`
-	Gas              big.Int      `json:"gas"`
-	GasPrice         big.Int      `json:"gasPrice"`
+	Gas              EtherValue   `json:"gas"`
+	GasPrice         EtherValue   `json:"gasPrice"`
 	From             EtherAddress `json:"from"`
 	To               EtherAddress `json:"to"`
 	Nonce            HexString    `json:"nonce"`
@@ -53,10 +52,10 @@ func (et1 EtherTransaction) Compare(et2 *EtherTransaction) error {
 	if et1.BlockNumber != et2.BlockNumber {
 		return fmt.Errorf("error in blockNumber: [1: %v,2: %v]", et1.BlockNumber, et2.BlockNumber)
 	}
-	if et1.Gas.Cmp(&et2.Gas) != 0 {
+	if !et1.Gas.IsEqual(&et2.Gas) {
 		return fmt.Errorf("error in gas: [1: %v,2: %v]", et1.Gas.String(), et2.Gas.String())
 	}
-	if et1.GasPrice.Cmp(&et2.GasPrice) != 0 {
+	if !et1.GasPrice.IsEqual(&et2.GasPrice) {
 		return fmt.Errorf("error in gasPrice: [1: %v,2: %v]", et1.GasPrice.String(), et2.GasPrice.String())
 	}
 	if et1.From.value != et2.From.value {

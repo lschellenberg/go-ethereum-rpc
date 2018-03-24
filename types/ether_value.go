@@ -7,7 +7,16 @@ import (
 )
 
 type EtherValue struct {
-	value big.Int
+	value    big.Int
+	decimals int
+}
+
+func NewEtherValue(decimals ...int) *EtherValue {
+	ev := new(EtherValue)
+	if len(decimals) == 1 {
+		ev.decimals = decimals[0]
+	}
+	return ev
 }
 
 func (ev *EtherValue) FromHexString(hex string) (*EtherValue, error) {
@@ -57,6 +66,14 @@ func (ev *EtherValue) String() string {
 	}
 
 	return strings.TrimRight(buffer.String(), "0")
+}
+
+func (ev *EtherValue) Hash() string {
+	return ev.HexString().Hash()
+}
+
+func (ev *EtherValue) HexString() (*HexString) {
+	return new(HexString).FromBytes(ev.value.Bytes())
 }
 
 func EtherValueZero() *EtherValue {

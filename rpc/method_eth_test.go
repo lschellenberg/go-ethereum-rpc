@@ -437,8 +437,10 @@ func transactions() []types.HexString {
 	return trans
 }
 func getTransaction_99192() *types.EtherTransaction {
-	gas, _ := big.NewInt(0).SetString("250000", 10) // gas limit
-	gasPrice, _ := big.NewInt(0).SetString("8000000000", 10)
+	temp, _ := big.NewInt(0).SetString("250000", 10) // gas limit
+	gas := types.NewEtherValue().FromBigInt(temp)
+	temp, _ = big.NewInt(0).SetString("8000000000", 10)
+	gasPrice := types.NewEtherValue().FromBigInt(temp)
 	from, _ := new(types.EtherAddress).FromString("0xfdc795aa0c3b4b30bca8275d61f8dfbd49d9e912")
 	to, _ := new(types.EtherAddress).FromString("0x8d12a197cb00d4747a1fe03395095ce2a5cc6819")
 	nonce, _ := types.NewHexString("0x0e")
