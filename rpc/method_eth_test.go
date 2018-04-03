@@ -17,7 +17,7 @@ type TestConfig struct {
 }
 
 func config() *TestConfig {
-	return LocalhostConfig()
+	return InfuraConfig()
 }
 
 func InfuraConfig() *TestConfig {
@@ -32,6 +32,16 @@ func LocalhostConfig() *TestConfig {
 		address:         RPCEndpointLocalHost,
 		protocolVersion: 99,
 		coinbase:        "0x44a139cc0aed5eb5dbc6838b284fb051cad72dcb",
+		hashrate:        0,
+		mining:          false,
+	}
+}
+
+func GCloudConfig() *TestConfig {
+	return &TestConfig{
+		address:         GCloudEndpoint,
+		protocolVersion: 99,
+		coinbase:        "0x0000000000000000000000000000000000000000",
 		hashrate:        0,
 		mining:          false,
 	}
@@ -62,6 +72,46 @@ func TestRPCClient_EthBlockNumber(t *testing.T) {
 
 	if expectedBlockNumberMin > block {
 		t.Errorf("wrong block number [At Least: %v, Actual: %v]", expectedBlockNumberMin, block)
+	}
+}
+
+func TestEth_Call(t *testing.T) {
+	params := new(EthCallParams).ToContract("0xd780ae2bf04cd96e577d3d014762f831d97129d0", "0x115976c4")
+	result, err := NewRPCClient(config().address).Eth.Call(params, nil)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	expectedResult := "0x7e49e51d4e30054915f11bd72c6c02f7423c1f40"
+
+	if expectedResult != result.String() {
+		t.Errorf("wrong eth_call response [Expected: %v, Actual: %v]", expectedResult, result.String())
+	}
+}
+
+func TestEth_CallWithQuantity(t *testing.T) {
+	params := new(EthCallParams).ToContract("0xd780ae2bf04cd96e577d3d014762f831d97129d0", "0xacc99bb7")
+	result, err := NewRPCClient(config().address).Eth.Call(params, types.QuantityBlock(4900000))
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	expectedResult := "0x7e49e51d4e30054915f11bd72c6c02f7423c1f40"
+
+	value, err := new(types.EtherValue).FromHexString(result.String())
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Error("Value: ", value)
+	if expectedResult != result.String() {
+		t.Errorf("wrong eth_call response [Expected: %v, Actual: %v]", expectedResult, result.String())
 	}
 }
 

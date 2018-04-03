@@ -7,7 +7,7 @@ import (
 const (
 	MethodEthAccounts                         = "eth_accounts"
 	MethodEthBlockNumber                      = "eth_blockNumber"
-	MethodCall                                = "eth_call"
+	MethodEthCall                             = "eth_call"
 	MethodCoinbase                            = "eth_coinbase"
 	MethodGas                                 = "eth_estimate_gas"
 	MethodGasPrice                            = "eth_gasPrice"
@@ -81,10 +81,15 @@ func (eth Eth) BlockNumber() (int64, error) {
 	rpc method: "eth_call"
 	Executes a new message call immediately without creating a transaction on the block chain.
 	returns hex, the return value of the function call
-	TODO
+	curl --data '{"method":"eth_call","params":[{"to":"0xd780ae2bf04cd96e577d3d014762f831d97129d0","value":"0x115976c4"}],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+
 */
-func (eth Eth) Call(params *EthCallParams) (string, error) {
-	return "", NotImplemented
+func (eth Eth) Call(callParams *EthCallParams, quantity *types.Quantity) (*types.HexString, error) {
+	if quantity == nil {
+		quantity = types.QuantityLatest()
+	}
+
+	return eth.client.RequestHexString(MethodEthCall, callParams.ToMap(), quantity.HexStringOrTag())
 }
 
 /*
@@ -119,7 +124,7 @@ func (eth Eth) GasPrice() (*types.EtherValue, error) {
 	Returns the balance of the account of given address.
 */
 func (eth Eth) GetBalance(address string, quantity *types.Quantity) (*types.EtherValue, error) {
-	return eth.client.RequestEtherValue(MethodGetBalance, address, quantity.String())
+	return eth.client.RequestEtherValue(MethodGetBalance, address, quantity.HexStringOrTag())
 }
 
 /*
@@ -223,6 +228,7 @@ eth_getWork
 func (eth Eth) Hashrate() (int64, error) {
 	return eth.client.RequestInt64(MethodHashrate)
 }
+
 /*
 	rpc method: "eth_mining"
 	Returns true if client is actively mining new blocks.
@@ -232,6 +238,7 @@ func (eth Eth) Hashrate() (int64, error) {
 func (eth Eth) Mining() (bool, error) {
 	return eth.client.RequestBool(MethodMining)
 }
+
 /*
 TODO
 eth_newBlockFilter
