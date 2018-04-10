@@ -72,6 +72,7 @@ func (eth Eth) Accounts() ([]string, error) {
 /*
 	rpc method: "eth_blockNumber"
 	returns int64, the number of most recent block.
+	curl --data '{"method":"eth_blockNumber","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
  */
 func (eth Eth) BlockNumber() (int64, error) {
 	return eth.client.RequestInt64(MethodEthBlockNumber)
@@ -122,6 +123,7 @@ func (eth Eth) GasPrice() (*types.EtherValue, error) {
 /*
 	rpc method: "eth_getBalance"
 	Returns the balance of the account of given address.
+	curl --data '{"method":"eth_getBalance","params":["0x407d73d8a49eeb85d32cf465507dd71d507100c1"],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
 */
 func (eth Eth) GetBalance(address string, quantity *types.Quantity) (*types.EtherValue, error) {
 	return eth.client.RequestEtherValue(MethodGetBalance, address, quantity.HexStringOrTag())

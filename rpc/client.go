@@ -13,7 +13,7 @@ import (
 )
 
 const InfuraEndpoint = "https://mainnet.infura.io/3l5dxBOP3wPspnRDdG1u"
-const GCloudEndpoint = "http://35.198.105.93:8545"
+const GCloudEndpoint = "http://35.198.134.98:8545"
 
 // RPCRequest represents a jsonrpc request object.
 //

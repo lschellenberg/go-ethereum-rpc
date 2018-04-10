@@ -85,6 +85,20 @@ func (hs HexString) Bytes() []byte {
 	return hs.value
 }
 
+// used to display text, from ascii 7 on there are meaningful chars,
+// TODO sounds a bit arb.
+func (hs HexString) Text() string {
+	b := hs.Bytes()
+	rb := make([]byte, 0)
+	for _, v := range b {
+		if v > 7 {
+			rb = append(rb, v)
+		}
+	}
+
+	return string(rb)
+}
+
 func (hs *HexString) FromBytes(b []byte) *HexString {
 	hs.value = b
 	return hs
@@ -114,8 +128,16 @@ func (hs *HexString) FromInt64(i int64) *HexString {
 func (hs HexString) Int64() int64 {
 	b := hs.Bytes()
 
+	if len(b) == 0 {
+		return 0
+	}
+
+	if len(b) > 8 {
+		temp := b[len(b)-8:]
+		b = temp
+	}
 	// pad if necessary
-	if len(b) != 8 {
+	if len(b) < 8 {
 		temp := make([]byte, 8)
 
 		for i := 8 - len(b); i < 8; i++ {
@@ -182,4 +204,36 @@ func HexStringListToStringList(s []HexString) ([]string) {
 
 func (hs1 HexString) IsEqual(hs2 *HexString) bool {
 	return bytes.Compare(hs1.value, hs2.value) == 0
+}
+
+func (hs1 *HexString) Concat(hs2 *HexString) *HexString {
+	nb := make([]byte, len(hs1.value)+len(hs2.value))
+
+	for k, v := range hs1.value {
+		nb[k] = v
+	}
+
+	for k, v := range hs2.value {
+		nb[k+len(hs1.value)] = v
+	}
+
+	return NewHexStringFromBytes(nb)
+}
+
+func (hs1 *HexString) PadTo(length int) (*HexString) {
+
+	if len(hs1.value) == length {
+		return NewHexStringFromBytes(hs1.value)
+	}
+
+	nb := make([]byte, length)
+	paddingLength := length - len(hs1.value)
+
+	if len(hs1.value) > length {
+		copy(nb, hs1.value[-paddingLength:])
+	} else {
+		copy(nb[paddingLength:], hs1.value)
+	}
+
+	return NewHexStringFromBytes(nb)
 }

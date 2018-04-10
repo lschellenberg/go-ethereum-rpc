@@ -30,6 +30,14 @@ func (ecp *EthCallParams) ToContract(address string, functionKeccak string) *Eth
 	}
 }
 
+
+func (ecp *EthCallParams) ToContractWithValue(address string, functionKeccak string) *EthCallParams {
+	return &EthCallParams{
+		Data: functionKeccak,
+		To:   address,
+	}
+}
+
 type EthEstimateGasParams struct {
 	From     string         `json:"from"`      // (optional) 20 Bytes - The address the transaction is send from.
 	To       string         `json:"to"`        // (optional when creating new contract) 20 Bytes - The address the transaction is directed to.
