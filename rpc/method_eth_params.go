@@ -1,6 +1,9 @@
 package rpc
 
-import "github.com/Leondroids/go-ethereum-rpc/types"
+import (
+	"github.com/Leondroids/go-ethereum-rpc/types"
+	"github.com/Leondroids/go-ethereum-rpc/rpcutils"
+)
 
 type EthCallParams struct {
 	From     string `json:"from,omitempty"`      // (optional) 20 Bytes - The address the transaction is send from.
@@ -28,6 +31,31 @@ func (ecp *EthCallParams) ToContract(address string, functionKeccak string) *Eth
 		Data: functionKeccak,
 		To:   address,
 	}
+}
+
+
+func (ecp *EthCallParams) ToContractWithArgument(address string, functionSignature string, arg []byte) (*EthCallParams, error) {
+	keccak, err := rpcutils.Signature2MethodId(functionSignature)
+
+	if err != nil {
+		return nil, err
+	}
+
+	hsf, err := types.NewHexString(keccak)
+
+	if err != nil {
+		return nil, err
+	}
+
+	hsa := types.NewHexStringFromBytes(arg).PadTo(32)
+
+	data := hsf.Concat(hsa)
+
+
+	return &EthCallParams{
+		Data: data.Hash(),
+		To:   address,
+	}, nil
 }
 
 

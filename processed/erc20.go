@@ -3,13 +3,13 @@ package processed
 import (
 	"github.com/Leondroids/go-ethereum-rpc/types"
 	"fmt"
+	"github.com/Leondroids/go-ethereum-rpc/rpc"
 )
 
 const (
 	IconomiTokenAddress = "0x888666CA69E0f178DED6D75b5726Cee99A87D698"
 	ERC20TransferTopic  = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 )
-
 
 type ERC20Transfer struct {
 	TransactionHash *types.HexString    `json:"transactionHash"`
@@ -53,4 +53,25 @@ func (erc *ERC20Transfer) FromReceipt(transReceipt *EtherTransactionWithReceipt,
 	}
 
 	return nil, fmt.Errorf("cannot create erc20 token, log of %v/%v doesnt contain Transfer information", transReceipt.Hash, transReceipt.BlockNumber)
+}
+
+func GetERC20BalanceOf(tokenAddress string, toAddress string, eth rpc.Eth) (*types.EtherValue, error) {
+
+	to, err := types.NewHexString(toAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	params, err := new(rpc.EthCallParams).ToContractWithArgument(tokenAddress, "getBalanceOf(address)", to.Bytes())
+
+	if err != nil {
+		return nil, err
+	}
+
+	hex, err := eth.Call(params, types.QuantityLatest())
+	if err != nil {
+		return nil, err
+	}
+
+	return types.NewEtherValue().FromHexString(hex.Hash())
 }

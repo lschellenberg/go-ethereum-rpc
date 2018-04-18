@@ -4,6 +4,8 @@ import (
 	"math/big"
 	"bytes"
 	"strings"
+	"fmt"
+	"strconv"
 )
 
 type EtherValue struct {
@@ -11,10 +13,23 @@ type EtherValue struct {
 	decimals int
 }
 
+func NewEtherValueFromBigInt(bi *big.Int, decimals ...int) *EtherValue {
+	ev := new(EtherValue)
+	if len(decimals) == 1 {
+		ev.decimals = decimals[0]
+	} else {
+		ev.decimals = 18
+	}
+	ev.value = *bi
+	return ev
+}
+
 func NewEtherValue(decimals ...int) *EtherValue {
 	ev := new(EtherValue)
 	if len(decimals) == 1 {
 		ev.decimals = decimals[0]
+	} else {
+		ev.decimals = 18
 	}
 	return ev
 }
@@ -26,6 +41,43 @@ func (ev *EtherValue) FromHexString(hex string) (*EtherValue, error) {
 	}
 	ev.value = *r
 	return ev, nil
+}
+
+func (ev *EtherValue) Float64() (float64, error) {
+	return strconv.ParseFloat(ev.String(), 64)
+}
+
+func (ev *EtherValue) FromDotString(dot string) (*EtherValue, error) {
+	if ev.decimals == 0 {
+		ev.decimals = 18
+	}
+	trimmed := strings.TrimLeft(dot, "0")
+	a := strings.Split(trimmed, ".")
+
+	bb := bytes.Buffer{}
+	if len(a) == 1 {
+		bb.WriteString(a[0])
+	} else {
+
+		digit, decimal := a[0], a[1]
+		pads := ev.decimals - len(decimal)
+
+		bb.WriteString(digit)
+		bb.WriteString(decimal)
+
+		for i := 0; i < pads; i++ {
+			bb.WriteString("0")
+		}
+	}
+
+	sv := bb.String()
+
+	bi, ok := new(big.Int).SetString(sv, 10)
+
+	if !ok {
+		return nil, fmt.Errorf("couldnt convert %v to bi.Int", sv)
+	}
+	return ev.FromBigInt(bi), nil
 }
 
 func (ev *EtherValue) FromBigInt(bi *big.Int) *EtherValue {
@@ -42,13 +94,14 @@ func (ev1 *EtherValue) IsEqual(ev2 *EtherValue) bool {
 }
 
 func (ev *EtherValue) String() string {
+	decimals := 18
 	bi := ev.value
 	s := bi.String()
 	var buffer bytes.Buffer
 
-	if len(s) > 18 {
+	if len(s) > decimals {
 		for i := 0; i < len(s); i++ {
-			if i == len(s)-18 {
+			if i == len(s)-decimals {
 				buffer.WriteString(".")
 			}
 			buffer.WriteByte(s[i])
@@ -65,7 +118,12 @@ func (ev *EtherValue) String() string {
 		}
 	}
 
-	return strings.TrimRight(buffer.String(), "0")
+	tr := strings.TrimRight(buffer.String(), "0")
+	if tr[len(tr)-1] == '.' {
+		return strings.TrimRight(tr, ".")
+	}
+
+	return tr
 }
 
 func (ev *EtherValue) Hash() string {
@@ -82,4 +140,10 @@ func EtherValueZero() *EtherValue {
 
 func EtherValueOne() *EtherValue {
 	return new(EtherValue).FromBigInt(big.NewInt(1000000000000000000))
+}
+
+func (ev1 *EtherValue) Add(ev2 *EtherValue) *EtherValue {
+	sum := big.NewInt(0).Add(ev1.BigInt(), ev2.BigInt())
+
+	return new(EtherValue).FromBigInt(sum)
 }
