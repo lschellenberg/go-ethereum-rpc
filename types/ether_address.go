@@ -68,8 +68,18 @@ func (ea1 *EtherAddress) IsEqual(ea2 *EtherAddress) bool {
 }
 func (address *EtherAddress) From32ByteString(value string) (*EtherAddress, error) {
 	if len(value) != 64+2 {
-		return nil, fmt.Errorf("%v is not a 64 byte hex string", value)
+		return nil, fmt.Errorf("%v is not a 32 byte hex string", value)
 	}
 
 	return address.FromString(value[26:])
+}
+
+
+func (address *EtherAddress) From32ByteHex(hs *HexString) (*EtherAddress, error) {
+	b := hs.Bytes()
+	if len(b) != 32 {
+		return nil, fmt.Errorf("%v is not a 32 byte hex string", hs.Hash())
+	}
+
+	return address.FromBytes(b[12:])
 }

@@ -47,31 +47,53 @@ func (ev *EtherValue) Float64() (float64, error) {
 	return strconv.ParseFloat(ev.String(), 64)
 }
 
-func (ev *EtherValue) FromDotString(dot string) (*EtherValue, error) {
+func (ev *EtherValue) FromBigIntString(intString string) (*EtherValue, error) {
 	if ev.decimals == 0 {
 		ev.decimals = 18
 	}
-	trimmed := strings.TrimLeft(dot, "0")
-	a := strings.Split(trimmed, ".")
+
+	bi, ok := new(big.Int).SetString(intString, 10)
+	if !ok {
+		return nil, fmt.Errorf("couldn't convert %v to big.Int", intString)
+	}
+	ev.value = *bi
+	return ev, nil
+}
+func (ev *EtherValue) FromFloat64String(floatString string) (*EtherValue, error) {
+	if ev.decimals == 0 {
+		ev.decimals = 18
+	}
 
 	bb := bytes.Buffer{}
-	if len(a) == 1 {
-		bb.WriteString(a[0])
-	} else {
 
-		digit, decimal := a[0], a[1]
-		pads := ev.decimals - len(decimal)
+	trimmed := strings.TrimLeft(floatString, "0")
 
-		bb.WriteString(digit)
-		bb.WriteString(decimal)
+	// no decimals
+	if !strings.Contains(trimmed, ".") {
 
-		for i := 0; i < pads; i++ {
+		bb.WriteString(trimmed)
+		for i := 0; i < ev.decimals; i++ {
 			bb.WriteString("0")
+		}
+	} else {
+		a := strings.Split(trimmed, ".")
+		if len(a) == 1 {
+			bb.WriteString(a[0])
+		} else {
+
+			digit, decimal := a[0], a[1]
+			pads := ev.decimals - len(decimal)
+
+			bb.WriteString(digit)
+			bb.WriteString(decimal)
+
+			for i := 0; i < pads; i++ {
+				bb.WriteString("0")
+			}
 		}
 	}
 
 	sv := bb.String()
-
 	bi, ok := new(big.Int).SetString(sv, 10)
 
 	if !ok {

@@ -84,7 +84,9 @@ func (hs HexString) String() string {
 func (hs HexString) Bytes() []byte {
 	return hs.value
 }
-
+func (hs HexString) Plain() string {
+	return hex.EncodeToString(hs.Bytes())
+}
 // used to display text, from ascii 7 on there are meaningful chars,
 // TODO sounds a bit arb.
 func (hs HexString) Text() string {

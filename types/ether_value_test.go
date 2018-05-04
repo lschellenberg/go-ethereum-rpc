@@ -20,47 +20,56 @@ func TestEtherValue_Add(t *testing.T) {
 func TestEtherValue_FromDotString(t *testing.T) {
 	s := "0.1"
 
-	result, err := new(EtherValue).FromDotString(s)
+	result, err := new(EtherValue).FromFloat64String(s)
 
 	if err != nil {
 		t.Error(err)
 	}
-	expected := "0.1"
-	if result.String() != expected {
-		t.Errorf("dot string not equal,[Expected: %v, Actual: %v]", expected, result.String())
+	actual := result.BigInt().String()
+	expected := "100000000000000000"
+	if actual != expected {
+		t.Errorf("dot string not equal,[Expected: %v, Actual: %v]", expected, actual)
 	}
 
 	// Test 2
-	s1 := "266482000000000000000"
-	result1, err := new(EtherValue).FromDotString(s1)
+	s = "12345678.123981345"
+
+	result, err = new(EtherValue).FromFloat64String(s)
 
 	if err != nil {
 		t.Error(err)
 	}
-
-	if len(result1.value.Bytes()) != 9 {
-		t.Errorf("wrong size of ether value, [Expected: %v, Acutal: %v]", 9, len(result1.value.Bytes()))
-	}
-
-	expected1 := "266.482"
-	if result1.String() != expected1 {
-		t.Errorf("dot string not equal,[Expected: %v, Actual: %v]", expected1, result1.String())
+	actual = result.BigInt().String()
+	expected = "12345678123981345000000000"
+	if actual != expected {
+		t.Errorf("dot string not equal,[Expected: %v, Actual: %v]", expected, actual)
 	}
 
 	// Test 3
-	s2 := "266000000000000000000"
-	result2, err := new(EtherValue).FromDotString(s2)
+	s = "74"
+
+	result, err = new(EtherValue).FromFloat64String(s)
 
 	if err != nil {
 		t.Error(err)
 	}
-
-	if len(result2.value.Bytes()) != 9 {
-		t.Errorf("wrong size of ether value, [Expected: %v, Acutal: %v]", 9, len(result.value.Bytes()))
+	actual = result.BigInt().String()
+	expected = "74000000000000000000"
+	if actual != expected {
+		t.Errorf("dot string not equal,[Expected: %v, Actual: %v]", expected, actual)
 	}
 
-	expected2 := "266"
-	if result1.String() != expected2 {
-		t.Errorf("dot string not equal,[Expected: %v, Actual: %v]", expected2, result2.String())
+	// Test 4
+	s = "74.0"
+
+	result, err = new(EtherValue).FromFloat64String(s)
+
+	if err != nil {
+		t.Error(err)
+	}
+	actual = result.BigInt().String()
+	expected = "74000000000000000000"
+	if actual != expected {
+		t.Errorf("dot string not equal,[Expected: %v, Actual: %v]", expected, actual)
 	}
 }
