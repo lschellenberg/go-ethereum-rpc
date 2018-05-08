@@ -2,10 +2,10 @@ package rpc
 
 import (
 	"fmt"
-	"github.com/Leondroids/go-ethereum-rpc/types"
+	"github.com/Leondroids/go-ethereum-rpc/rpctypes"
 )
 
-func (client *Client) RequestFilter(method string, params ...interface{}) (*types.HexString, error) {
+func (client *Client) RequestFilter(method string, params ...interface{}) (*rpctypes.HexString, error) {
 	response, err := checkRPCError(client.Call(method, params...))
 
 	if err != nil {
@@ -15,7 +15,6 @@ func (client *Client) RequestFilter(method string, params ...interface{}) (*type
 	if response.Result == nil {
 		return nil, fmt.Errorf("response returned without error but no transaction found for %v", params)
 	}
-
 
 	return nil, nil
 }

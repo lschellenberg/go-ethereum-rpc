@@ -3,7 +3,7 @@ package rpc
 import (
 	"fmt"
 	"encoding/json"
-	"github.com/Leondroids/go-ethereum-rpc/types"
+	"github.com/Leondroids/go-ethereum-rpc/rpctypes"
 )
 
 type SyncStatus struct {
@@ -54,15 +54,15 @@ func (ssr *SyncStatusRaw) fromJSON(js []byte) (*SyncStatus, error) {
 
 func (ssr *SyncStatusRaw) ToSyncStatus() (*SyncStatus, error) {
 
-	startingBlock, err := types.NewHexString(ssr.StartingBlock)
+	startingBlock, err := rpctypes.NewHexString(ssr.StartingBlock)
 	if err != nil {
 		return nil, err
 	}
-	highestBlock, err := types.NewHexString(ssr.HighestBlock)
+	highestBlock, err := rpctypes.NewHexString(ssr.HighestBlock)
 	if err != nil {
 		return nil, err
 	}
-	currentBlock, err := types.NewHexString(ssr.CurrentBlock)
+	currentBlock, err := rpctypes.NewHexString(ssr.CurrentBlock)
 	if err != nil {
 		return nil, err
 	}

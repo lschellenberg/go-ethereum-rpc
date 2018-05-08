@@ -1,9 +1,9 @@
 package processed
 
 import (
-	"github.com/Leondroids/go-ethereum-rpc/types"
 	"fmt"
 	"github.com/Leondroids/go-ethereum-rpc/rpc"
+	"github.com/Leondroids/go-ethereum-rpc/rpctypes"
 )
 
 const (
@@ -12,12 +12,12 @@ const (
 )
 
 type ERC20Transfer struct {
-	TransactionHash *types.HexString    `json:"transactionHash"`
-	BlockNumber     int64               `json:"blockNumber"`
-	Date            int64               `json:"date"`
-	From            *types.EtherAddress `json:"from"`
-	To              *types.EtherAddress `json:"to"`
-	TokenValue      *types.EtherValue   `json:"tokenValue"`
+	TransactionHash *rpctypes.HexString    `json:"transactionHash"`
+	BlockNumber     int64                  `json:"blockNumber"`
+	Date            int64                  `json:"date"`
+	From            *rpctypes.EtherAddress `json:"from"`
+	To              *rpctypes.EtherAddress `json:"to"`
+	TokenValue      *rpctypes.EtherValue   `json:"tokenValue"`
 }
 
 func (erc *ERC20Transfer) Log() string {
@@ -37,15 +37,15 @@ func (erc *ERC20Transfer) FromReceipt(transReceipt *EtherTransactionWithReceipt,
 			continue
 		}
 
-		erc.From, err = new(types.EtherAddress).From32ByteString(l.Topics[1].Hash())
+		erc.From, err = new(rpctypes.EtherAddress).From32ByteString(l.Topics[1].Hash())
 		if err != nil {
 			return nil, err
 		}
-		erc.To, err = new(types.EtherAddress).From32ByteString(l.Topics[2].Hash())
+		erc.To, err = new(rpctypes.EtherAddress).From32ByteString(l.Topics[2].Hash())
 		if err != nil {
 			return nil, err
 		}
-		erc.TokenValue, err = new(types.EtherValue).FromHexString(l.Data.String())
+		erc.TokenValue, err = new(rpctypes.EtherValue).FromHexString(l.Data.String())
 		if err != nil {
 			return nil, err
 		}
@@ -55,9 +55,9 @@ func (erc *ERC20Transfer) FromReceipt(transReceipt *EtherTransactionWithReceipt,
 	return nil, fmt.Errorf("cannot create erc20 token, log of %v/%v doesnt contain Transfer information", transReceipt.Hash, transReceipt.BlockNumber)
 }
 
-func GetERC20BalanceOf(tokenAddress string, toAddress string, eth rpc.Eth) (*types.EtherValue, error) {
+func GetERC20BalanceOf(tokenAddress string, toAddress string, eth rpc.Eth) (*rpctypes.EtherValue, error) {
 
-	to, err := types.NewHexString(toAddress)
+	to, err := rpctypes.NewHexString(toAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -68,10 +68,10 @@ func GetERC20BalanceOf(tokenAddress string, toAddress string, eth rpc.Eth) (*typ
 		return nil, err
 	}
 
-	hex, err := eth.Call(params, types.QuantityLatest())
+	hex, err := eth.Call(params, rpctypes.QuantityLatest())
 	if err != nil {
 		return nil, err
 	}
 
-	return types.NewEtherValue().FromHexString(hex.Hash())
+	return rpctypes.NewEtherValue().FromHexString(hex.Hash())
 }

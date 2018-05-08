@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
-	"github.com/Leondroids/go-ethereum-rpc/types"
+	"github.com/Leondroids/go-ethereum-rpc/rpctypes"
 )
 
 const InfuraEndpoint = "https://mainnet.infura.io/3l5dxBOP3wPspnRDdG1u"
@@ -459,7 +459,7 @@ func (rpcResponse *RPCResponse) GetStringList() ([]string, error) {
 	if !ok {
 		return nil, fmt.Errorf("could not parse []interface{} list from %s", rpcResponse.Result)
 	}
-	return types.InterfaceListToStringList(val)
+	return rpctypes.InterfaceListToStringList(val)
 }
 
 // GetObject converts the rpc response to an object (e.g. a struct) and returns it.
@@ -527,7 +527,7 @@ func (client *Client) CallForHex(method string, params ...interface{}) (string, 
 	}
 	b := response.Result.([]byte)
 
-	return types.ByteToHex(b), nil
+	return rpctypes.ByteToHex(b), nil
 }
 
 func checkRPCError(response *RPCResponse, err error) (*RPCResponse, error) {

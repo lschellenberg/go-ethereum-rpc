@@ -1,7 +1,7 @@
 package rpc
 
 import (
-	"github.com/Leondroids/go-ethereum-rpc/types"
+	"github.com/Leondroids/go-ethereum-rpc/rpctypes"
 )
 
 const (
@@ -85,9 +85,9 @@ func (eth Eth) BlockNumber() (int64, error) {
 	curl --data '{"method":"eth_call","params":[{"to":"0xd780ae2bf04cd96e577d3d014762f831d97129d0","value":"0x115976c4"}],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
 
 */
-func (eth Eth) Call(callParams *EthCallParams, quantity *types.Quantity) (*types.HexString, error) {
+func (eth Eth) Call(callParams *EthCallParams, quantity *rpctypes.Quantity) (*rpctypes.HexString, error) {
 	if quantity == nil {
-		quantity = types.QuantityLatest()
+		quantity = rpctypes.QuantityLatest()
 	}
 
 	return eth.client.RequestHexString(MethodEthCall, callParams.ToMap(), quantity.HexStringOrTag())
@@ -99,7 +99,7 @@ func (eth Eth) Call(callParams *EthCallParams, quantity *types.Quantity) (*types
 
 	curl --data '{"method":"eth_coinbase","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
 */
-func (eth Eth) Coinbase() (*types.HexString, error) {
+func (eth Eth) Coinbase() (*rpctypes.HexString, error) {
 	return eth.client.RequestHexString(MethodCoinbase)
 }
 
@@ -116,7 +116,7 @@ func (eth Eth) EstimateGas(params *EthEstimateGasParams) (int64, error) {
 	rpc method: "eth_gasPrice"
 	Returns the current price per gas in wei.
  */
-func (eth Eth) GasPrice() (*types.EtherValue, error) {
+func (eth Eth) GasPrice() (*rpctypes.EtherValue, error) {
 	return eth.client.RequestEtherValue(MethodGasPrice)
 }
 
@@ -125,7 +125,7 @@ func (eth Eth) GasPrice() (*types.EtherValue, error) {
 	Returns the balance of the account of given address.
 	curl --data '{"method":"eth_getBalance","params":["0x407d73d8a49eeb85d32cf465507dd71d507100c1"],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
 */
-func (eth Eth) GetBalance(address string, quantity *types.Quantity) (*types.EtherValue, error) {
+func (eth Eth) GetBalance(address string, quantity *rpctypes.Quantity) (*rpctypes.EtherValue, error) {
 	return eth.client.RequestEtherValue(MethodGetBalance, address, quantity.HexStringOrTag())
 }
 
@@ -133,7 +133,7 @@ func (eth Eth) GetBalance(address string, quantity *types.Quantity) (*types.Ethe
 	rpc method: "eth_getBlockByHash"
 	Returns information about a block by hash.
  */
-func (eth Eth) GetBlockByHash(address string, full bool) (*types.EtherBlock, error) {
+func (eth Eth) GetBlockByHash(address string, full bool) (*rpctypes.EtherBlock, error) {
 	return eth.client.RequestEtherBlock(MethodGetBlockByHash, address, full)
 }
 
@@ -141,8 +141,8 @@ func (eth Eth) GetBlockByHash(address string, full bool) (*types.EtherBlock, err
 	rpc method: "eth_getBlockByHash"
 	Returns information about a block by block number.
  */
-func (eth Eth) GetBlockByNumber(blockNumber int64, full bool) (*types.EtherBlock, error) {
-	return eth.client.RequestEtherBlock(MethodGetBlockByNumber, new(types.HexString).FromInt64(blockNumber).String(), full)
+func (eth Eth) GetBlockByNumber(blockNumber int64, full bool) (*rpctypes.EtherBlock, error) {
+	return eth.client.RequestEtherBlock(MethodGetBlockByNumber, new(rpctypes.HexString).FromInt64(blockNumber).String(), full)
 }
 
 /*
@@ -158,7 +158,7 @@ func (eth Eth) GetBlockTransactionCountByHash(address string) (int64, error) {
 	Returns the number of transactions in a block from a block matching the given block number.
  */
 func (eth Eth) GetBlockTransactionCountByNumber(blockNumber int64) (int64, error) {
-	return eth.client.RequestInt64(MethodGetBlockTransactionCountByNumber, new(types.HexString).FromInt64(blockNumber).String())
+	return eth.client.RequestInt64(MethodGetBlockTransactionCountByNumber, new(rpctypes.HexString).FromInt64(blockNumber).String())
 }
 
 /*
@@ -174,23 +174,23 @@ eth_getStorageAt
 	rpc method: "eth_getTransactionByBlockHashAndIndex"
 	Returns information about a transaction by block hash and transaction index position.
 */
-func (eth Eth) GetTransactionByBlockHashAndIndex(hash string, index int64) (*types.EtherTransaction, error) {
-	return eth.client.RequestEtherTransaction(MethodGetTransactionByBlockHashAndIndex, hash, new(types.HexString).FromInt64(index).String())
+func (eth Eth) GetTransactionByBlockHashAndIndex(hash string, index int64) (*rpctypes.EtherTransaction, error) {
+	return eth.client.RequestEtherTransaction(MethodGetTransactionByBlockHashAndIndex, hash, new(rpctypes.HexString).FromInt64(index).String())
 }
 
 /*
 	rpc method: "eth_getTransactionByBlockHashAndIndex"
 	Returns information about a transaction by block number and transaction index position.
 */
-func (eth Eth) GetTransactionByBlockNumberAndIndex(blockNumber int64, index int64) (*types.EtherTransaction, error) {
-	return eth.client.RequestEtherTransaction(MethodGetTransactionByBlockNumberAndIndex, new(types.HexString).FromInt64(blockNumber).String(), new(types.HexString).FromInt64(index).String())
+func (eth Eth) GetTransactionByBlockNumberAndIndex(blockNumber int64, index int64) (*rpctypes.EtherTransaction, error) {
+	return eth.client.RequestEtherTransaction(MethodGetTransactionByBlockNumberAndIndex, new(rpctypes.HexString).FromInt64(blockNumber).String(), new(rpctypes.HexString).FromInt64(index).String())
 }
 
 /*
 	rpc method: "eth_getTransactionByHash"
 	Returns the information about a transaction requested by transaction hash.
 */
-func (eth Eth) GetTransactionByHash(hash string) (*types.EtherTransaction, error) {
+func (eth Eth) GetTransactionByHash(hash string) (*rpctypes.EtherTransaction, error) {
 	return eth.client.RequestEtherTransaction(MethodGetTransactionByHash, hash)
 }
 
@@ -198,7 +198,7 @@ func (eth Eth) GetTransactionByHash(hash string) (*types.EtherTransaction, error
 	rpc method: "eth_getTransactionCount"
 	Returns the number of transactions sent from an address.
 */
-func (eth Eth) GetTransactionCount(hash string, quantity *types.Quantity) (int64, error) {
+func (eth Eth) GetTransactionCount(hash string, quantity *rpctypes.Quantity) (int64, error) {
 	return eth.client.RequestInt64(MethodGetTransactionCount, hash, quantity.HexStringOrTag())
 }
 
@@ -208,7 +208,7 @@ func (eth Eth) GetTransactionCount(hash string, quantity *types.Quantity) (int64
 
 	curl --data '{"method":"eth_getTransactionReceipt","params":["0x9676244c3a233b19a025184ea406fc5765f53edee7afabd901b470adcdeb5720"],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
 */
-func (eth Eth) GetTransactionReceipt(hash string) (*types.EtherTransactionReceipt, error) {
+func (eth Eth) GetTransactionReceipt(hash string) (*rpctypes.EtherTransactionReceipt, error) {
 	return eth.client.RequestEtherTransactionReceipt(MethodGetTransactionReceipt, hash)
 }
 
@@ -250,7 +250,7 @@ eth_newBlockFilter
 	rpc method: "eth_newFilter"
 	Creates a filter object, based on filter options, to notify when the state changes (logs). To check if the state has changed, call eth_getFilterChanges.
 */
-func (eth Eth) NewFilter(fromBlock types.Quantity, toBlock types.Quantity, address string, topics ...string) (*types.HexString, error) {
+func (eth Eth) NewFilter(fromBlock rpctypes.Quantity, toBlock rpctypes.Quantity, address string, topics ...string) (*rpctypes.HexString, error) {
 	return eth.client.RequestFilter(MethodGetTransactionReceipt)
 }
 

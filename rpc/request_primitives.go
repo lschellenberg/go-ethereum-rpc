@@ -2,14 +2,14 @@ package rpc
 
 import (
 	"fmt"
-	"github.com/Leondroids/go-ethereum-rpc/types"
 	"github.com/Leondroids/gox"
+	"github.com/Leondroids/go-ethereum-rpc/rpctypes"
 )
 
 /*
 	Request EtherValue
  */
-func (client *Client) RequestEtherValue(method string, params ...interface{}) (*types.EtherValue, error) {
+func (client *Client) RequestEtherValue(method string, params ...interface{}) (*rpctypes.EtherValue, error) {
 	response, err := checkRPCError(client.Call(method, params...))
 
 	if err != nil {
@@ -22,13 +22,13 @@ func (client *Client) RequestEtherValue(method string, params ...interface{}) (*
 		return nil, fmt.Errorf("could not parse string from %s", response.Result)
 	}
 
-	r, err := types.HexToBigInt(val)
+	r, err := rpctypes.HexToBigInt(val)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return new(types.EtherValue).FromBigInt(r), nil
+	return new(rpctypes.EtherValue).FromBigInt(r), nil
 }
 
 /*
@@ -50,7 +50,7 @@ func (client *Client) RequestInt64(method string, params ...interface{}) (int64,
 		return 0, fmt.Errorf("could not parse string from %s", response.Result)
 	}
 
-	hs, err := types.NewHexString(val)
+	hs, err := rpctypes.NewHexString(val)
 	if err != nil {
 		return -1, err
 	}
@@ -97,7 +97,7 @@ func (client *Client) RequestBool(method string, params ...interface{}) (bool, e
 /*
 	Request HexString
  */
-func (client *Client) RequestHexString(method string, params ...interface{}) (*types.HexString, error) {
+func (client *Client) RequestHexString(method string, params ...interface{}) (*rpctypes.HexString, error) {
 	response, err := checkRPCError(client.Call(method, params...))
 	if err != nil {
 		return nil, err
@@ -113,12 +113,13 @@ func (client *Client) RequestHexString(method string, params ...interface{}) (*t
 		return nil, fmt.Errorf("could not parse string from %v", response.Result)
 	}
 
-	return types.NewHexString(val)
+	return rpctypes.NewHexString(val)
 }
+
 /*
 	Request HexStringList
  */
-func (client *Client) RequestHexStringList(method string, params ...interface{}) ([]types.HexString, error) {
+func (client *Client) RequestHexStringList(method string, params ...interface{}) ([]rpctypes.HexString, error) {
 	response, err := checkRPCError(client.Call(method, params...))
 	if err != nil {
 		return nil, err
@@ -140,5 +141,5 @@ func (client *Client) RequestHexStringList(method string, params ...interface{})
 		return nil, err
 	}
 
-	return types.HexStringListFromString(sl)
+	return rpctypes.HexStringListFromString(sl)
 }

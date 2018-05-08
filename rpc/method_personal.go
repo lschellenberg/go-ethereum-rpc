@@ -1,6 +1,8 @@
 package rpc
 
-import "github.com/Leondroids/go-ethereum-rpc/types"
+import (
+	"github.com/Leondroids/go-ethereum-rpc/rpctypes"
+)
 
 const (
 	MethodPersonalListAccounts    = "personal_listAccounts"
@@ -22,7 +24,7 @@ type Personal struct {
 
 	curl --data '{"method":"personal_listAccounts","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
 */
-func (personal *Personal) ListAccounts() ([]types.HexString, error) {
+func (personal *Personal) ListAccounts() ([]rpctypes.HexString, error) {
 	return personal.client.RequestHexStringList(MethodPersonalListAccounts)
 }
 
@@ -33,6 +35,6 @@ func (personal *Personal) ListAccounts() ([]types.HexString, error) {
 
 	curl --data '{"method":"personal_newAccount","params":["hunter2"],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
  */
-func (personal *Personal) NewAccount(password string) (*types.HexString, error) {
+func (personal *Personal) NewAccount(password string) (*rpctypes.HexString, error) {
 	return personal.client.RequestHexString(MethodPersonalNewAccount, password)
 }

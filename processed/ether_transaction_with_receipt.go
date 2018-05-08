@@ -1,39 +1,39 @@
 package processed
 
 import (
-	"github.com/Leondroids/go-ethereum-rpc/types"
 	"fmt"
 	"github.com/Leondroids/go-ethereum-rpc/rpc"
+	"github.com/Leondroids/go-ethereum-rpc/rpctypes"
 )
 
 type EtherTransactionWithReceipt struct {
-	Hash              types.HexString    `json:"hash"`
-	From              types.EtherAddress `json:"from"`
-	To                types.EtherAddress `json:"to"`
-	Input             types.HexString    `json:"input"`
-	Value             types.EtherValue   `json:"value"`
-	BlockHash         types.HexString    `json:"blockHash"`
-	BlockNumber       int64              `json:"blockNumber"`
-	Gas               types.EtherValue   `json:"gas"`
-	GasPrice          types.EtherValue   `json:"gasPrice"`
-	CumulativeGasUsed types.EtherValue   `json:"cumulativeGasUsed"`
-	GasUsed           types.EtherValue   `json:"gasUsed"`
-	ContractAddress   types.EtherAddress `json:"contractAddress"`
-	Status            int64              `json:"status"`
-	LogsBloom         types.HexString    `json:"logsBloom"`
-	Logs              []types.EtherLog   `json:"logs"`
-	Nonce             types.HexString    `json:"nonce"`
-	TransactionIndex  int64              `json:"transactionIndex"`
-	V                 types.HexString    `json:"v"`
-	R                 types.HexString    `json:"r"`
-	S                 types.HexString    `json:"s"`
+	Hash              rpctypes.HexString    `json:"hash"`
+	From              rpctypes.EtherAddress `json:"from"`
+	To                rpctypes.EtherAddress `json:"to"`
+	Input             rpctypes.HexString    `json:"input"`
+	Value             rpctypes.EtherValue   `json:"value"`
+	BlockHash         rpctypes.HexString    `json:"blockHash"`
+	BlockNumber       int64                 `json:"blockNumber"`
+	Gas               rpctypes.EtherValue   `json:"gas"`
+	GasPrice          rpctypes.EtherValue   `json:"gasPrice"`
+	CumulativeGasUsed rpctypes.EtherValue   `json:"cumulativeGasUsed"`
+	GasUsed           rpctypes.EtherValue   `json:"gasUsed"`
+	ContractAddress   rpctypes.EtherAddress `json:"contractAddress"`
+	Status            int64                 `json:"status"`
+	LogsBloom         rpctypes.HexString    `json:"logsBloom"`
+	Logs              []rpctypes.EtherLog   `json:"logs"`
+	Nonce             rpctypes.HexString    `json:"nonce"`
+	TransactionIndex  int64                 `json:"transactionIndex"`
+	V                 rpctypes.HexString    `json:"v"`
+	R                 rpctypes.HexString    `json:"r"`
+	S                 rpctypes.HexString    `json:"s"`
 }
 
 type EtherTransactionWithReceiptDB interface {
 	write(db *EtherTransactionWithReceiptDB) error
 }
 
-func LoadTransactionReceiptAndMerge(et *types.EtherTransaction, eth *rpc.Eth) (*EtherTransactionWithReceipt, error) {
+func LoadTransactionReceiptAndMerge(et *rpctypes.EtherTransaction, eth *rpc.Eth) (*EtherTransactionWithReceipt, error) {
 	receipt, err := GetTransactionReceipt(et, eth)
 	if err != nil {
 		return nil, err
@@ -42,11 +42,11 @@ func LoadTransactionReceiptAndMerge(et *types.EtherTransaction, eth *rpc.Eth) (*
 	return MergeTransactionWithReceipt(et, receipt)
 }
 
-func GetTransactionReceipt(et *types.EtherTransaction, eth *rpc.Eth) (*types.EtherTransactionReceipt, error) {
+func GetTransactionReceipt(et *rpctypes.EtherTransaction, eth *rpc.Eth) (*rpctypes.EtherTransactionReceipt, error) {
 	return eth.GetTransactionReceipt(et.Hash.Hash())
 }
 
-func MergeTransactionWithReceipt(transaction *types.EtherTransaction, receipt *types.EtherTransactionReceipt) (*EtherTransactionWithReceipt, error) {
+func MergeTransactionWithReceipt(transaction *rpctypes.EtherTransaction, receipt *rpctypes.EtherTransactionReceipt) (*EtherTransactionWithReceipt, error) {
 	if !transaction.Hash.IsEqual(&receipt.TransactionHash) {
 		return nil, fmt.Errorf("transaction and receipt are not equal, [transaction: %v, receipt: %v]", transaction.Hash.String(), receipt.TransactionHash.String())
 	}

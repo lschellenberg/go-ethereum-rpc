@@ -1,7 +1,7 @@
 package rpc
 
 import (
-	"github.com/Leondroids/go-ethereum-rpc/types"
+	"github.com/Leondroids/go-ethereum-rpc/rpctypes"
 )
 
 const (
@@ -26,5 +26,5 @@ func (web3 Web3) ClientVersion() (string, error) {
 	returns string, Keccak-256 (not the standardized SHA3-256) of the given data.
  */
 func (web3 Web3) Sha3(b []byte) (string, error) {
-	return web3.client.RequestString(MethodWeb3Sha3, types.ByteToHex(b))
+	return web3.client.RequestString(MethodWeb3Sha3, rpctypes.ByteToHex(b))
 }

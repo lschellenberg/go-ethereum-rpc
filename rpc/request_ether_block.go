@@ -2,11 +2,11 @@ package rpc
 
 import (
 	"encoding/json"
-	"github.com/Leondroids/go-ethereum-rpc/types"
 	"fmt"
+	"github.com/Leondroids/go-ethereum-rpc/rpctypes"
 )
 
-func (client *Client) RequestEtherBlock(method string, params ...interface{}) (*types.EtherBlock, error) {
+func (client *Client) RequestEtherBlock(method string, params ...interface{}) (*rpctypes.EtherBlock, error) {
 	p := []interface{}(params)
 
 	if len(p) != 2 {
@@ -16,7 +16,6 @@ func (client *Client) RequestEtherBlock(method string, params ...interface{}) (*
 	full := p[1].(bool)
 
 	response, err := checkRPCError(client.Call(method, params...))
-
 
 	if err != nil {
 		return nil, err
@@ -29,7 +28,7 @@ func (client *Client) RequestEtherBlock(method string, params ...interface{}) (*
 	return getBlockFromResponse(response.Result, full)
 }
 
-func getBlockFromResponse(response interface{}, full bool) (*types.EtherBlock, error) {
+func getBlockFromResponse(response interface{}, full bool) (*rpctypes.EtherBlock, error) {
 	js, err := json.Marshal(response)
 
 	if err != nil {
@@ -65,122 +64,122 @@ func getBlockFromResponse(response interface{}, full bool) (*types.EtherBlock, e
 //
 ///////////////////////////////
 
-func (rpcBlock RPCEtherBlockRawWithTransactionHash) ToEtherBlock() (*types.EtherBlock, error) {
-	number, err := types.NewHexString(rpcBlock.Number)
+func (rpcBlock RPCEtherBlockRawWithTransactionHash) ToEtherBlock() (*rpctypes.EtherBlock, error) {
+	number, err := rpctypes.NewHexString(rpcBlock.Number)
 
 	if err != nil {
 		return nil, err
 	}
 
-	hash, err := types.NewHexString(rpcBlock.Hash)
+	hash, err := rpctypes.NewHexString(rpcBlock.Hash)
 
 	if err != nil {
 		return nil, err
 	}
 
-	parentHash, err := types.NewHexString(rpcBlock.ParentHash)
+	parentHash, err := rpctypes.NewHexString(rpcBlock.ParentHash)
 
 	if err != nil {
 		return nil, err
 	}
 
-	nonce, err := types.NewHexString(rpcBlock.Nonce)
+	nonce, err := rpctypes.NewHexString(rpcBlock.Nonce)
 
 	if err != nil {
 		return nil, err
 	}
 
-	sha3Uncles, err := types.NewHexString(rpcBlock.Sha3Uncles)
+	sha3Uncles, err := rpctypes.NewHexString(rpcBlock.Sha3Uncles)
 
 	if err != nil {
 		return nil, err
 	}
 
-	logsBloom, err := types.NewHexString(rpcBlock.LogsBloom)
+	logsBloom, err := rpctypes.NewHexString(rpcBlock.LogsBloom)
 
 	if err != nil {
 		return nil, err
 	}
 
-	transactionsRoot, err := types.NewHexString(rpcBlock.TransactionsRoot)
+	transactionsRoot, err := rpctypes.NewHexString(rpcBlock.TransactionsRoot)
 
 	if err != nil {
 		return nil, err
 	}
 
-	stateRoot, err := types.NewHexString(rpcBlock.StateRoot)
+	stateRoot, err := rpctypes.NewHexString(rpcBlock.StateRoot)
 
 	if err != nil {
 		return nil, err
 	}
 
-	receiptsRoot, err := types.NewHexString(rpcBlock.ReceiptsRoot)
+	receiptsRoot, err := rpctypes.NewHexString(rpcBlock.ReceiptsRoot)
 
 	if err != nil {
 		return nil, err
 	}
 
-	miner, err := new(types.EtherAddress).FromString(rpcBlock.Miner)
+	miner, err := new(rpctypes.EtherAddress).FromString(rpcBlock.Miner)
 
 	if err != nil {
 		return nil, err
 	}
 
-	difficulty, err := types.NewHexString(rpcBlock.Difficulty)
+	difficulty, err := rpctypes.NewHexString(rpcBlock.Difficulty)
 
 	if err != nil {
 		return nil, err
 	}
 
-	totalDifficulty, err := types.NewHexString(rpcBlock.TotalDifficulty)
+	totalDifficulty, err := rpctypes.NewHexString(rpcBlock.TotalDifficulty)
 
 	if err != nil {
 		return nil, err
 	}
 
-	extraData, err := types.NewHexString(rpcBlock.ExtraData)
+	extraData, err := rpctypes.NewHexString(rpcBlock.ExtraData)
 
 	if err != nil {
 		return nil, err
 	}
 
-	size, err := types.NewHexString(rpcBlock.Size)
+	size, err := rpctypes.NewHexString(rpcBlock.Size)
 
 	if err != nil {
 		return nil, err
 	}
 
-	gasLimit, err := types.NewHexString(rpcBlock.GasLimit)
+	gasLimit, err := rpctypes.NewHexString(rpcBlock.GasLimit)
 
 	if err != nil {
 		return nil, err
 	}
 
-	gasUsed, err := types.NewHexString(rpcBlock.GasUsed)
+	gasUsed, err := rpctypes.NewHexString(rpcBlock.GasUsed)
 
 	if err != nil {
 		return nil, err
 	}
 
-	timestamp, err := types.NewHexString(rpcBlock.Timestamp)
+	timestamp, err := rpctypes.NewHexString(rpcBlock.Timestamp)
 
 	if err != nil {
 		return nil, err
 	}
 
-	transactions, err := types.ToHexStringList(rpcBlock.Transactions)
+	transactions, err := rpctypes.ToHexStringList(rpcBlock.Transactions)
 
 	if err != nil {
 		return nil, err
 	}
 
-	uncles, err := types.ToHexStringList(rpcBlock.Uncles)
+	uncles, err := rpctypes.ToHexStringList(rpcBlock.Uncles)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &types.EtherBlock{
+	return &rpctypes.EtherBlock{
 		Number:           number.Int64(),
 		Hash:             *hash,
 		ParentHash:       *parentHash,
@@ -203,111 +202,110 @@ func (rpcBlock RPCEtherBlockRawWithTransactionHash) ToEtherBlock() (*types.Ether
 	}, nil
 }
 
-func (rpcBlock RPCEtherBlockWithFullTransactions) ToEtherBlock() (*types.EtherBlock, error) {
-	number, err := types.NewHexString(rpcBlock.Number)
+func (rpcBlock RPCEtherBlockWithFullTransactions) ToEtherBlock() (*rpctypes.EtherBlock, error) {
+	number, err := rpctypes.NewHexString(rpcBlock.Number)
 
 	if err != nil {
 		return nil, err
 	}
 
-	hash, err := types.NewHexString(rpcBlock.Hash)
+	hash, err := rpctypes.NewHexString(rpcBlock.Hash)
 
 	if err != nil {
 		return nil, err
 	}
 
-	parentHash, err := types.NewHexString(rpcBlock.ParentHash)
+	parentHash, err := rpctypes.NewHexString(rpcBlock.ParentHash)
 
 	if err != nil {
 		return nil, err
 	}
 
-	nonce, err := types.NewHexString(rpcBlock.Nonce)
+	nonce, err := rpctypes.NewHexString(rpcBlock.Nonce)
 
 	if err != nil {
 		return nil, err
 	}
 
-	sha3Uncles, err := types.NewHexString(rpcBlock.Sha3Uncles)
+	sha3Uncles, err := rpctypes.NewHexString(rpcBlock.Sha3Uncles)
 
 	if err != nil {
 		return nil, err
 	}
 
-	logsBloom, err := types.NewHexString(rpcBlock.LogsBloom)
+	logsBloom, err := rpctypes.NewHexString(rpcBlock.LogsBloom)
 
 	if err != nil {
 		return nil, err
 	}
 
-	transactionsRoot, err := types.NewHexString(rpcBlock.TransactionsRoot)
+	transactionsRoot, err := rpctypes.NewHexString(rpcBlock.TransactionsRoot)
 
 	if err != nil {
 		return nil, err
 	}
 
-	stateRoot, err := types.NewHexString(rpcBlock.StateRoot)
+	stateRoot, err := rpctypes.NewHexString(rpcBlock.StateRoot)
 
 	if err != nil {
 		return nil, err
 	}
 
-	receiptsRoot, err := types.NewHexString(rpcBlock.ReceiptsRoot)
+	receiptsRoot, err := rpctypes.NewHexString(rpcBlock.ReceiptsRoot)
 
 	if err != nil {
 		return nil, err
 	}
 
-	miner, err := new(types.EtherAddress).FromString(rpcBlock.Miner)
+	miner, err := new(rpctypes.EtherAddress).FromString(rpcBlock.Miner)
 
 	if err != nil {
 		return nil, err
 	}
 
-	difficulty, err := types.NewHexString(rpcBlock.Difficulty)
+	difficulty, err := rpctypes.NewHexString(rpcBlock.Difficulty)
 
 	if err != nil {
 		return nil, err
 	}
 
-	totalDifficulty, err := types.NewHexString(rpcBlock.TotalDifficulty)
+	totalDifficulty, err := rpctypes.NewHexString(rpcBlock.TotalDifficulty)
 
 	if err != nil {
 		return nil, err
 	}
 
-	extraData, err := types.NewHexString(rpcBlock.ExtraData)
+	extraData, err := rpctypes.NewHexString(rpcBlock.ExtraData)
 
 	if err != nil {
 		return nil, err
 	}
 
-	size, err := types.NewHexString(rpcBlock.Size)
+	size, err := rpctypes.NewHexString(rpcBlock.Size)
 
 	if err != nil {
 		return nil, err
 	}
 
-	gasLimit, err := types.NewHexString(rpcBlock.GasLimit)
+	gasLimit, err := rpctypes.NewHexString(rpcBlock.GasLimit)
 
 	if err != nil {
 		return nil, err
 	}
 
-	gasUsed, err := types.NewHexString(rpcBlock.GasUsed)
+	gasUsed, err := rpctypes.NewHexString(rpcBlock.GasUsed)
 
 	if err != nil {
 		return nil, err
 	}
 
-	timestamp, err := types.NewHexString(rpcBlock.Timestamp)
+	timestamp, err := rpctypes.NewHexString(rpcBlock.Timestamp)
 
 	if err != nil {
 		return nil, err
 	}
 
-
-	etl := make([]types.EtherTransaction, len(rpcBlock.Transactions))
+	etl := make([]rpctypes.EtherTransaction, len(rpcBlock.Transactions))
 	for k, v := range rpcBlock.Transactions {
 		et, err := v.toEtherTransaction()
 
@@ -317,13 +315,13 @@ func (rpcBlock RPCEtherBlockWithFullTransactions) ToEtherBlock() (*types.EtherBl
 		etl[k] = *et
 	}
 
-	uncles, err := types.ToHexStringList(rpcBlock.Uncles)
+	uncles, err := rpctypes.ToHexStringList(rpcBlock.Uncles)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &types.EtherBlock{
+	return &rpctypes.EtherBlock{
 		Number:           number.Int64(),
 		Hash:             *hash,
 		ParentHash:       *parentHash,
