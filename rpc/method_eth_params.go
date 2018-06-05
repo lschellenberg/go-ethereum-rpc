@@ -74,4 +74,67 @@ type EthEstimateGasParams struct {
 }
 
 type NewFilterParams struct {
+	FromBlock rpctypes.Quantity `json:"fromBlock"` // Tag - (optional) (default: latest) Integer block number, or 'latest' for the last mined block or 'pending', 'earliest' for not yet mined transactions.
+	ToBlock   rpctypes.Quantity `json:"toBlock"`   // Tag - (optional) (default: latest) Integer block number, or 'latest' for the last mined block or 'pending', 'earliest' for not yet mined transactions.
+	Address   string            `json:"address"`
+	Topics    [3][]string       `json:"topics"`
+}
+
+func (p *NewFilterParams) ToMap() map[string]interface{} {
+	m := make(map[string]interface{})
+
+	m["fromBlock"] = p.FromBlock.HexStringOrTag()
+	m["toBlock"] = p.ToBlock.HexStringOrTag()
+	m["address"] = p.Address
+
+	t := make([]interface{}, 3)
+
+	t[0] = GetInterfaceFromStringList(p.Topics[0])
+	t[1] = GetInterfaceFromStringList(p.Topics[1])
+	t[2] = GetInterfaceFromStringList(p.Topics[2])
+
+	m["topics"] = t
+
+	return m
+}
+
+func GetInterfaceFromStringList(s []string) interface{} {
+	if s == nil {
+		return nil
+	}
+
+	if len(s) == 0 {
+		return nil
+	}
+
+	if len(s) == 1 {
+		return s[0]
+	}
+
+	return s
+}
+
+func CreateNewFilterParamsWithOneTopic(address string, from *rpctypes.Quantity, to *rpctypes.Quantity, topic string) *NewFilterParams {
+	topics := CreateNewFilterTopics([]string{topic}, nil, nil)
+	return &NewFilterParams{
+		FromBlock: *from,
+		ToBlock:   *to,
+		Address:   address,
+		Topics:    topics,
+	}
+}
+
+func CreateNewFilterParams(address string, from *rpctypes.Quantity, to *rpctypes.Quantity, topics [3][]string) *NewFilterParams {
+	return &NewFilterParams{
+		FromBlock: *from,
+		ToBlock:   *to,
+		Address:   address,
+		Topics:    topics,
+	}
+}
+
+func CreateNewFilterTopics(topic1 []string, topic2 []string, topic3 []string) [3][]string {
+	return [3][]string{
+		topic1, topic2, topic3,
+	}
 }

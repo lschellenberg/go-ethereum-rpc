@@ -56,8 +56,8 @@ func (erc *ERC20Transfer) FromReceipt(transReceipt *EtherTransactionWithReceipt,
 }
 
 func GetERC20BalanceOf(tokenAddress string, toAddress string, eth rpc.Eth) (*rpctypes.EtherValue, error) {
-
 	to, err := rpctypes.NewHexString(toAddress)
+
 	if err != nil {
 		return nil, err
 	}
@@ -69,6 +69,30 @@ func GetERC20BalanceOf(tokenAddress string, toAddress string, eth rpc.Eth) (*rpc
 	}
 
 	hex, err := eth.Call(params, rpctypes.QuantityLatest())
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rpctypes.NewEtherValue().FromHexString(hex.Hash())
+}
+
+
+func GetERC20BalanceOfWithQuantity(tokenAddress string, toAddress string, quantity *rpctypes.Quantity, eth rpc.Eth) (*rpctypes.EtherValue, error) {
+	to, err := rpctypes.NewHexString(toAddress)
+
+	if err != nil {
+		return nil, err
+	}
+
+	params, err := new(rpc.EthCallParams).ToContractWithArgument(tokenAddress, "getBalanceOf(address)", to.Bytes())
+
+	if err != nil {
+		return nil, err
+	}
+
+	hex, err := eth.Call(params, quantity)
+
 	if err != nil {
 		return nil, err
 	}

@@ -3,7 +3,7 @@ package rpc
 import "testing"
 
 func TestNet_NetListening(t *testing.T) {
-	listening, err := NewRPCClient(RPCEndpointLocalHost).Net.NetListening()
+	listening, err := NewRPCClient(config().address).Net.NetListening()
 
 	if err != nil {
 		t.Error(err)
@@ -16,21 +16,23 @@ func TestNet_NetListening(t *testing.T) {
 }
 
 func TestNet_NetPeerCount(t *testing.T) {
-	count, err := NewRPCClient(RPCEndpointLocalHost).Net.NetPeerCount()
+	count, err := NewRPCClient(config().address).Net.NetPeerCount()
 
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	if count < 5 {
-		t.Errorf("net should listen at least 5 peers, but: %v", count)
+	var expectedPeers int64 = 2
+
+	if count < expectedPeers {
+		t.Errorf("net should listen at least %v peers, but: %v", expectedPeers, count)
 	}
 }
 
 func TestNet_NetVersion(t *testing.T) {
 	expectedVersion := "1"
-	version, err := NewRPCClient(RPCEndpointLocalHost).Net.NetVersion()
+	version, err := NewRPCClient(config().address).Net.NetVersion()
 
 	if err != nil {
 		t.Error(err)

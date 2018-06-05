@@ -7,6 +7,24 @@ type Quantity struct {
 	Tag   string // either latest, earliest or pending
 }
 
+func (q *Quantity) FromString(s string) (*Quantity, error) {
+	switch s {
+	case "latest":
+		return QuantityLatest(), nil
+	case "pending":
+		return QuantityPending(), nil
+	case "earliest":
+		return QuantityEarliest(), nil
+	default:
+		block, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+
+		return QuantityBlock(block), nil
+	}
+}
+
 func QuantityBlock(block int64) *Quantity {
 	return &Quantity{
 		Block: block,

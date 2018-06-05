@@ -149,15 +149,18 @@ func (client *Client) NewRPCNotificationObject(method string, params ...interfac
 //
 // If the request was successful the Error field is nil and the Result field of the RPCRespnse struct contains the rpc result.
 func (client *Client) Call(method string, params ...interface{}) (*RPCResponse, error) {
-	// Ensure that params are nil and will be omitted from JSON if not specified.
 	var p interface{}
+
 	if len(params) != 0 {
 		p = params
 	}
+
 	httpRequest, err := client.newRequest(false, method, p)
+
 	if err != nil {
 		return nil, err
 	}
+
 	return client.doCall(httpRequest)
 }
 
@@ -324,11 +327,13 @@ func (client *Client) newRequest(notification bool, method string, params interf
 	}
 
 	body, err := json.Marshal(rpcRequest)
+
 	if err != nil {
 		return nil, err
 	}
 
 	request, err := http.NewRequest("POST", client.endpoint, bytes.NewReader(body))
+
 	if err != nil {
 		return nil, err
 	}
@@ -382,74 +387,7 @@ func (client *Client) UpdateRequestID(rpcRequest *RPCRequest) {
 	}
 }
 
-// GetInt converts the rpc response to an int and returns it.
-//
-// This is a convenient function. Int could be 32 or 64 bit, depending on the architecture the code is running on.
-// For a deterministic result use GetInt64().
-//
-// If result was not an integer an error is returned.
-func (rpcResponse *RPCResponse) GetInt() (int, error) {
-	i, err := rpcResponse.GetInt64()
-	return int(i), err
-}
 
-// GetInt64 converts the rpc response to an int64 and returns it.
-//
-// If result was not an integer an error is returned.
-func (rpcResponse *RPCResponse) GetInt64() (int64, error) {
-	val, ok := rpcResponse.Result.(json.Number)
-	if !ok {
-		return 0, fmt.Errorf("could not parse int64 from %s", rpcResponse.Result)
-	}
-
-	i, err := val.Int64()
-	if err != nil {
-		return 0, err
-	}
-
-	return i, nil
-}
-
-// GetFloat64 converts the rpc response to an float64 and returns it.
-//
-// If result was not an float64 an error is returned.
-func (rpcResponse *RPCResponse) GetFloat64() (float64, error) {
-	val, ok := rpcResponse.Result.(json.Number)
-	if !ok {
-		return 0, fmt.Errorf("could not parse float64 from %s", rpcResponse.Result)
-	}
-
-	f, err := val.Float64()
-	if err != nil {
-		return 0, err
-	}
-
-	return f, nil
-}
-
-// GetBool converts the rpc response to a bool and returns it.
-//
-// If result was not a bool an error is returned.
-func (rpcResponse *RPCResponse) GetBool() (bool, error) {
-	val, ok := rpcResponse.Result.(bool)
-	if !ok {
-		return false, fmt.Errorf("could not parse bool from %s", rpcResponse.Result)
-	}
-
-	return val, nil
-}
-
-// GetString converts the rpc response to a string and returns it.
-//
-// If result was not a string an error is returned.
-func (rpcResponse *RPCResponse) GetString() (string, error) {
-	val, ok := rpcResponse.Result.(string)
-	if !ok {
-		return "", fmt.Errorf("could not parse string from %s", rpcResponse.Result)
-	}
-
-	return val, nil
-}
 
 // GetStringList converts the rpc response to []string and returns it.
 //
@@ -462,29 +400,6 @@ func (rpcResponse *RPCResponse) GetStringList() ([]string, error) {
 	return rpctypes.InterfaceListToStringList(val)
 }
 
-// GetObject converts the rpc response to an object (e.g. a struct) and returns it.
-// The parameter should be a structure that can hold the data of the response object.
-//
-// For example if the following json return value is expected: {"name": "alex", age: 33, "country": "Germany"}
-// the struct should look like
-//  type Person struct {
-//    Name string
-//    Age int
-//    Country string
-//  }
-func (rpcResponse *RPCResponse) GetObject(toType interface{}) error {
-	js, err := json.Marshal(rpcResponse.Result)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(js, toType)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
 
 // GetResponseOf returns the rpc response of the corresponding request by matching the id.
 //
@@ -493,6 +408,7 @@ func (batchResponse *BatchResponse) GetResponseOf(request *RPCRequest) (*RPCResp
 	if request == nil {
 		return nil, errors.New("parameter cannot be nil")
 	}
+
 	for _, elem := range batchResponse.rpcResponses {
 		if elem.ID == request.ID {
 			return &elem, nil
@@ -502,33 +418,7 @@ func (batchResponse *BatchResponse) GetResponseOf(request *RPCRequest) (*RPCResp
 	return nil, fmt.Errorf("element with id %d not found", request.ID)
 }
 
-func (client *Client) CallForString(method string, params ...interface{}) (string, error) {
-	response, err := checkRPCError(client.Call(method, params...))
-	if err != nil {
-		return "", err
-	}
-	return response.GetString()
-}
 
-func (client *Client) CallForBytes(method string, params ...interface{}) ([]byte, error) {
-	response, err := checkRPCError(client.Call(method, params...))
-	if err != nil {
-		return nil, err
-	}
-
-	return response.Result.([]byte), nil
-}
-
-func (client *Client) CallForHex(method string, params ...interface{}) (string, error) {
-	response, err := client.Call(method, params...)
-
-	if err != nil {
-		return "", err
-	}
-	b := response.Result.([]byte)
-
-	return rpctypes.ByteToHex(b), nil
-}
 
 func checkRPCError(response *RPCResponse, err error) (*RPCResponse, error) {
 	if err != nil {

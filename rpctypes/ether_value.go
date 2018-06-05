@@ -169,3 +169,9 @@ func (ev1 *EtherValue) Add(ev2 *EtherValue) *EtherValue {
 
 	return new(EtherValue).FromBigInt(sum)
 }
+
+func (ev1 *EtherValue) Sub(ev2 *EtherValue) *EtherValue {
+	difference := big.NewInt(0).Sub(ev1.BigInt(), ev2.BigInt())
+
+	return new(EtherValue).FromBigInt(difference)
+}

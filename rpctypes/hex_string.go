@@ -164,6 +164,9 @@ func ToHexStringList(l []string) ([]HexString, error) {
 
 	return result, nil
 }
+func (hs1 * HexString) Compare(hs2 *HexString) bool {
+	return bytes.Compare(hs1.TrimLeft().value, hs2.TrimLeft().value) != 0
+}
 
 func CompareHexStringList(s1 []HexString, s2 []HexString) error {
 	if len(s1) != len(s2) {
@@ -171,8 +174,7 @@ func CompareHexStringList(s1 []HexString, s2 []HexString) error {
 	}
 
 	for k, v := range s1 {
-
-		if bytes.Compare(s2[k].value, v.value) != 0 {
+		if v.Compare(&s2[k]) {
 			return fmt.Errorf("not eqal at position %v", k)
 		}
 	}
@@ -238,4 +240,22 @@ func (hs1 *HexString) PadTo(length int) (*HexString) {
 	}
 
 	return NewHexStringFromBytes(nb)
+}
+
+func (hs *HexString) TrimLeft() (*HexString) {
+	b1 := hs.Bytes()
+
+	for k,v := range b1 {
+		if v != 0 {
+			return new(HexString).FromBytes(b1[k:])
+		}
+	}
+
+	return new(HexString).Empty()
+}
+
+func (hs *HexString) Empty() *HexString {
+	return &HexString{
+		value:make([]byte, 0),
+	}
 }

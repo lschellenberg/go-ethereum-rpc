@@ -17,7 +17,7 @@ type TestConfig struct {
 }
 
 func config() *TestConfig {
-	return InfuraConfig()
+	return GCloudConfig()
 }
 
 func InfuraConfig() *TestConfig {
@@ -296,6 +296,98 @@ func TestEth_GetTransactionByBlockHashAndIndex(t *testing.T) {
 	}
 }
 
+func TestEth_GetFilterLogs(t *testing.T) {
+
+	p := CreateNewFilterParamsWithOneTopic("0xd780ae2bf04cd96e577d3d014762f831d97129d0", rpctypes.QuantityBlock(5730114), rpctypes.QuantityBlock(5730114), "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef")
+	filter, err := NewRPCClient(config().address).Eth.NewFilter(p)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	result, err := NewRPCClient(config().address).Eth.GetFilterLogs(filter.Hash())
+
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(result) != 1 {
+		t.Error("expected length of return is 1")
+	}
+
+	ea, _ := new(rpctypes.EtherAddress).FromString("0xd780ae2bf04cd96e577d3d014762f831d97129d0")
+	t1, _ := rpctypes.NewHexString("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef")
+	t2, _ := rpctypes.NewHexString("0x1ce7ae555139c5ef5a57cc8d814a867ee6ee33d8")
+	t3, _ := rpctypes.NewHexString("0xf5a276aa1062f19453ef96e156ea868ee3c1fccf")
+	data, _ := rpctypes.NewHexString("0x00000000000000000000000000000000000000000000000ad78ebc5ac6200000")
+	bh, _ := rpctypes.NewHexString("0xaeeddb13df5d5a9b95a1748106286543e8c5115debf280bfdfb81c9efab5287a")
+	th, _ := rpctypes.NewHexString("0x95edd0f567e4617284c5cd64c659546d33828fac59a5594ca7d3f3d56bb3c186")
+
+	expectedLogs := &rpctypes.EtherLog{
+		Address:          *ea.HexString(),
+		Topics:           []rpctypes.HexString{*t1, *t2, *t3},
+		Data:             *data,
+		BlockNumber:      5730114,
+		BlockHash:        *bh,
+		TransactionHash:  *th,
+		TransactionIndex: 50,
+	}
+
+	if err := expectedLogs.Compare(result[0]); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestEth_GetLogs(t *testing.T) {
+	p := CreateNewFilterParamsWithOneTopic("0xd780ae2bf04cd96e577d3d014762f831d97129d0", rpctypes.QuantityBlock(5730114), rpctypes.QuantityBlock(5730114), "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef")
+	result, err := NewRPCClient(config().address).Eth.GetLogs(p)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(result) != 1 {
+		t.Error("expected length of return is 1")
+	}
+
+	ea, _ := new(rpctypes.EtherAddress).FromString("0xd780ae2bf04cd96e577d3d014762f831d97129d0")
+	t1, _ := rpctypes.NewHexString("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef")
+	t2, _ := rpctypes.NewHexString("0x1ce7ae555139c5ef5a57cc8d814a867ee6ee33d8")
+	t3, _ := rpctypes.NewHexString("0xf5a276aa1062f19453ef96e156ea868ee3c1fccf")
+	data, _ := rpctypes.NewHexString("0x00000000000000000000000000000000000000000000000ad78ebc5ac6200000")
+	bh, _ := rpctypes.NewHexString("0xaeeddb13df5d5a9b95a1748106286543e8c5115debf280bfdfb81c9efab5287a")
+	th, _ := rpctypes.NewHexString("0x95edd0f567e4617284c5cd64c659546d33828fac59a5594ca7d3f3d56bb3c186")
+
+	expectedLogs := &rpctypes.EtherLog{
+		Address:          *ea.HexString(),
+		Topics:           []rpctypes.HexString{*t1, *t2, *t3},
+		Data:             *data,
+		BlockNumber:      5730114,
+		BlockHash:        *bh,
+		TransactionHash:  *th,
+		TransactionIndex: 50,
+	}
+
+	if err := expectedLogs.Compare(result[0]); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestEth_GetStorageAt(t *testing.T) {
+	result, err := NewRPCClient(config().address).Eth.GetStorageAt("0xd780ae2bf04cd96e577d3d014762f831d97129d0", 1, rpctypes.QuantityLatest())
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	expected, _ := rpctypes.NewHexString("0x0000000000000000000000000000000000000000000000000000000000000000")
+
+	if !result.IsEqual(expected) {
+		t.Errorf("getStorageAt result not correct,[Expected: %v, Actual: %v]", expected, result.String())
+	}
+}
+
 // GetTransactionByBlockNumberAndIndex
 func TestEth_GetTransactionByBlockNumberAndIndex(t *testing.T) {
 	expected := getTransaction_99192()
@@ -386,7 +478,18 @@ func TestEth_Mining(t *testing.T) {
 	if mining != expectedMining {
 		t.Errorf("wrong mining [Expected: %v, Actual: %v]", expectedMining, mining)
 	}
+}
 
+func TestEth_NewFilter(t *testing.T) {
+	p := CreateNewFilterParamsWithOneTopic("0xd780ae2bf04cd96e577d3d014762f831d97129d0", rpctypes.QuantityLatest(), rpctypes.QuantityLatest(), "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef")
+	result, err := NewRPCClient(config().address).Eth.NewFilter(p)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Error(result)
 }
 
 func TestEth_ProtocolVersion(t *testing.T) {
@@ -436,7 +539,9 @@ func TestEth_UninstallFilter(t *testing.T) {
 		return
 	}
 
-	t.Error(result)
+	if !result {
+		t.Error("should uninstall filter")
+	}
 }
 
 func getBlock_4ad331() *rpctypes.EtherBlock {

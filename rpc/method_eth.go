@@ -163,12 +163,37 @@ func (eth Eth) GetBlockTransactionCountByNumber(blockNumber int64) (int64, error
 
 /*
 	TODO
-eth_getCode
-eth_getFilterChanges
-eth_getFilterLogs
-eth_getLogs
-eth_getStorageAt
+	eth_getCode
+	eth_getFilterChanges
 */
+
+
+/*
+	rpc method: "eth_getFilterLogs"
+	Returns array of log objects, or an empty array if nothing has changed since last poll.
+	curl --data '{"method":"eth_getFilterLogs","params":["0x16"],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+*/
+func (eth Eth) GetFilterLogs(filterID string) ([]rpctypes.EtherLog, error) {
+	return eth.client.RequestEtherLogList(MethodGetFilterLogs, filterID)
+}
+
+/*
+	rpc method: "eth_getLogs"
+	Returns array of log objects, or an empty array if nothing has changed since last poll.
+	curl --data '{"method":"eth_getLogs","params":[{"topics":["0x000000000000000000000000a94f5374fce5edbc8e2a8697c15331677e6ebf0b"]}],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+*/
+func (eth Eth) GetLogs(params *NewFilterParams) ([]rpctypes.EtherLog, error) {
+	return eth.client.RequestEtherLogList(MethodGetLogs, params.ToMap())
+}
+
+/*
+	rpc method: "eth_getStorageAt"
+	Returns the value from a storage position at a given address.
+	curl --data '{"method":"eth_getStorageAt","params":["0x407d73d8a49eeb85d32cf465507dd71d507100c1","0x0","0x2"],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+*/
+func (eth Eth) GetStorageAt(contractAddress string, index int64, quantity *rpctypes.Quantity) (*rpctypes.HexString, error) {
+	return eth.client.RequestHexString(MethodGetStorageAt, contractAddress, new(rpctypes.HexString).FromInt64(index).Hash(), quantity.String())
+}
 
 /*
 	rpc method: "eth_getTransactionByBlockHashAndIndex"
@@ -213,13 +238,11 @@ func (eth Eth) GetTransactionReceipt(hash string) (*rpctypes.EtherTransactionRec
 }
 
 /*
-	TODO
-eth_getTransactionReceipt
-eth_getUncleByBlockHashAndIndex
-eth_getUncleByBlockNumberAndIndex
-eth_getUncleCountByBlockHash
-eth_getUncleCountByBlockNumber
-eth_getWork
+	eth_getUncleByBlockHashAndIndex
+	eth_getUncleByBlockNumberAndIndex
+	eth_getUncleCountByBlockHash
+	eth_getUncleCountByBlockNumber
+	eth_getWork
 */
 /*
 	rpc method: "eth_hashrate"
@@ -250,8 +273,8 @@ eth_newBlockFilter
 	rpc method: "eth_newFilter"
 	Creates a filter object, based on filter options, to notify when the state changes (logs). To check if the state has changed, call eth_getFilterChanges.
 */
-func (eth Eth) NewFilter(fromBlock rpctypes.Quantity, toBlock rpctypes.Quantity, address string, topics ...string) (*rpctypes.HexString, error) {
-	return eth.client.RequestFilter(MethodGetTransactionReceipt)
+func (eth Eth) NewFilter(params *NewFilterParams) (*rpctypes.HexString, error) {
+	return eth.client.RequestHexString(MethodNewFilter, params.ToMap())
 }
 
 /*
@@ -268,12 +291,12 @@ func (eth Eth) ProtocolVersion() (int64, error) {
 }
 
 /*
-eth_sendRawTransaction
-eth_sendTransaction
-eth_sign
-eth_signTransaction
-eth_submitHashrate
-eth_submitWork
+	eth_sendRawTransaction
+	eth_sendTransaction
+	eth_sign
+	eth_signTransaction
+	eth_submitHashrate
+	eth_submitWork
 */
 
 /*

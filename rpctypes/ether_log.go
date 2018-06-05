@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"encoding/json"
 	"github.com/Leondroids/gox"
+	"log"
 )
 
 type EtherLog struct {
@@ -24,10 +25,10 @@ func (el1 EtherLog) Compare(el2 EtherLog) error {
 	}
 	err := CompareHexStringList(el1.Topics, el2.Topics)
 	if err != nil {
-		return fmt.Errorf("error in topice: [1: %v,2: %v]", el1.Topics, el2.Topics)
+		return fmt.Errorf("error in topics: [1: %v,2: %v], %v", el1.Topics, el2.Topics, err)
 	}
 	if !el1.Data.IsEqual(&el2.Data) {
-		return fmt.Errorf("error in data: [1: %v,2: %v]", el1.Data.String(), el2.Data.String())
+		return fmt.Errorf("error in data: [1: %v,2: %v]", el1.Data.Hash(), el2.Data.Hash())
 	}
 	if el1.BlockNumber != el2.BlockNumber {
 		return fmt.Errorf("error in blockNumber: [1: %v,2: %v]", el1.BlockNumber, el2.BlockNumber)
@@ -65,8 +66,34 @@ func CompareEtherLogList(ell1 []EtherLog, ell2 []EtherLog) error {
 }
 
 type EtherLogJSONConverter interface {
+	FromJSONArray([]byte) ([]EtherLog, error)
 	FromJSON([]byte) (*EtherLog, error)
 	ToJSON(*EtherLog) ([]byte, error)
+}
+
+func (raw *EtherLogRaw) FromJSONArray(js []byte) ([]EtherLog, error) {
+	log.Println("JS: ", string(js))
+	l := make([]EtherLogRaw, 0)
+
+	err := json.Unmarshal(js, &l)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]EtherLog, 0)
+
+	for _, v := range l {
+		el, err := v.ToEtherLog()
+
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, *el)
+	}
+
+	return result, nil
 }
 
 func (raw *EtherLogRaw) FromJSON(js []byte) (*EtherLog, error) {
@@ -75,6 +102,7 @@ func (raw *EtherLogRaw) FromJSON(js []byte) (*EtherLog, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return raw.ToEtherLog()
 }
 
