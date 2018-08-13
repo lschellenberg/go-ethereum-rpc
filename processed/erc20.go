@@ -55,6 +55,58 @@ func (erc *ERC20Transfer) FromReceipt(transReceipt *EtherTransactionWithReceipt,
 	return nil, fmt.Errorf("cannot create erc20 token, log of %v/%v doesnt contain Transfer information", transReceipt.Hash, transReceipt.BlockNumber)
 }
 
+
+func (erc *ERC20Transfer) FromEtherLog(log *rpctypes.EtherLog) (*ERC20Transfer, error) {
+	var err error
+	erc.BlockNumber = log.BlockNumber
+	erc.TransactionHash = &log.TransactionHash
+	erc.Date = 0
+
+	erc.From, err = new(rpctypes.EtherAddress).From32ByteString(log.Topics[1].Hash())
+
+	if err != nil {
+		return nil, err
+	}
+	erc.To, err = new(rpctypes.EtherAddress).From32ByteString(log.Topics[2].Hash())
+
+	if err != nil {
+		return nil, err
+	}
+
+	erc.TokenValue, err = new(rpctypes.EtherValue).FromHexString(log.Data.String())
+
+	if err != nil {
+		return nil, err
+	}
+
+	return erc, nil
+}
+
+
+
+func ERC20BalanceOf(tokenAddress string, toAddress string, eth rpc.Eth) (*rpctypes.EtherValue, error) {
+	to, err := rpctypes.NewHexString(toAddress)
+
+	if err != nil {
+		return nil, err
+	}
+
+	params, err := new(rpc.EthCallParams).ToContractWithArgument(tokenAddress, "balanceOf(address)", to.Bytes())
+
+	if err != nil {
+		return nil, err
+	}
+
+	hex, err := eth.Call(params, rpctypes.QuantityLatest())
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rpctypes.NewEtherValue().FromHexString(hex.Hash())
+}
+
+
 func GetERC20BalanceOf(tokenAddress string, toAddress string, eth rpc.Eth) (*rpctypes.EtherValue, error) {
 	to, err := rpctypes.NewHexString(toAddress)
 
@@ -76,7 +128,6 @@ func GetERC20BalanceOf(tokenAddress string, toAddress string, eth rpc.Eth) (*rpc
 
 	return rpctypes.NewEtherValue().FromHexString(hex.Hash())
 }
-
 
 func GetERC20BalanceOfWithQuantity(tokenAddress string, toAddress string, quantity *rpctypes.Quantity, eth rpc.Eth) (*rpctypes.EtherValue, error) {
 	to, err := rpctypes.NewHexString(toAddress)

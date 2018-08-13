@@ -73,6 +73,7 @@ func (eth Eth) Accounts() ([]string, error) {
 	rpc method: "eth_blockNumber"
 	returns int64, the number of most recent block.
 	curl --data '{"method":"eth_blockNumber","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+	https://mainnet.infura.io/CnUcPjgWQg4BW4Ozxznl
  */
 func (eth Eth) BlockNumber() (int64, error) {
 	return eth.client.RequestInt64(MethodEthBlockNumber)
@@ -115,6 +116,8 @@ func (eth Eth) EstimateGas(params *EthEstimateGasParams) (int64, error) {
 /*
 	rpc method: "eth_gasPrice"
 	Returns the current price per gas in wei.
+
+	curl --data '{"method":"eth_gasPrice","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
  */
 func (eth Eth) GasPrice() (*rpctypes.EtherValue, error) {
 	return eth.client.RequestEtherValue(MethodGasPrice)
@@ -232,6 +235,7 @@ func (eth Eth) GetTransactionCount(hash string, quantity *rpctypes.Quantity) (in
 	Returns the number of transactions sent from an address.
 
 	curl --data '{"method":"eth_getTransactionReceipt","params":["0x9676244c3a233b19a025184ea406fc5765f53edee7afabd901b470adcdeb5720"],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+https://mainnet.infura.io/CnUcPjgWQg4BW4Ozxznl
 */
 func (eth Eth) GetTransactionReceipt(hash string) (*rpctypes.EtherTransactionReceipt, error) {
 	return eth.client.RequestEtherTransactionReceipt(MethodGetTransactionReceipt, hash)

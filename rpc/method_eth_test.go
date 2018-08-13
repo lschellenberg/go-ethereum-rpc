@@ -17,7 +17,7 @@ type TestConfig struct {
 }
 
 func config() *TestConfig {
-	return GCloudConfig()
+	return InfuraConfig()
 }
 
 func InfuraConfig() *TestConfig {

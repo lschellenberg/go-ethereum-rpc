@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"encoding/json"
 	"github.com/Leondroids/gox"
-	"log"
 )
 
 type EtherLog struct {
@@ -72,7 +71,7 @@ type EtherLogJSONConverter interface {
 }
 
 func (raw *EtherLogRaw) FromJSONArray(js []byte) ([]EtherLog, error) {
-	log.Println("JS: ", string(js))
+
 	l := make([]EtherLogRaw, 0)
 
 	err := json.Unmarshal(js, &l)

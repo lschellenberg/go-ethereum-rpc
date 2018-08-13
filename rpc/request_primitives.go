@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Leondroids/gox"
 	"github.com/Leondroids/go-ethereum-rpc/rpctypes"
-	"log"
 )
 
 /*
@@ -99,7 +98,6 @@ func (client *Client) RequestBool(method string, params ...interface{}) (bool, e
 	Request HexString
  */
 func (client *Client) RequestHexString(method string, params ...interface{}) (*rpctypes.HexString, error) {
-	log.Println(params)
 	response, err := checkRPCError(client.Call(method, params...))
 	if err != nil {
 		return nil, err

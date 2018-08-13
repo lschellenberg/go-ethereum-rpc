@@ -138,3 +138,34 @@ func CreateNewFilterTopics(topic1 []string, topic2 []string, topic3 []string) [3
 		topic1, topic2, topic3,
 	}
 }
+
+type FilterTopicBuilder struct {
+	topic1 []string
+	topic2 []string
+	topic3 []string
+}
+
+func (ftb *FilterTopicBuilder) Create() *FilterTopicBuilder {
+	ftb.topic1 = make([]string, 0)
+	ftb.topic2 = make([]string, 0)
+	ftb.topic3 = make([]string, 0)
+	return ftb
+}
+
+func (ftb *FilterTopicBuilder) AddTopic(pos int, topic string) *FilterTopicBuilder {
+	switch pos {
+	case 0:
+		ftb.topic1 = append(ftb.topic1, topic)
+	case 1:
+		ftb.topic2 = append(ftb.topic2, topic)
+	case 2:
+		ftb.topic3 = append(ftb.topic3, topic)
+	}
+	return ftb
+}
+
+func (ftb *FilterTopicBuilder) Build() [3][]string {
+	return [3][]string{
+		ftb.topic1, ftb.topic2, ftb.topic3,
+	}
+}

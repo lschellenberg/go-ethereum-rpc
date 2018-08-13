@@ -115,6 +115,16 @@ func (ev1 *EtherValue) IsEqual(ev2 *EtherValue) bool {
 	return ev1.value.Cmp(ev2.BigInt()) == 0
 }
 
+func (ev1 *EtherValue) IsBiggerThan(ev2 *EtherValue) bool {
+	return ev1.value.Cmp(ev2.BigInt()) == 1
+}
+
+
+func (ev1 *EtherValue) IsBiggerOrEqualThan(ev2 *EtherValue) bool {
+	res := ev1.value.Cmp(ev2.BigInt())
+	return res == 1 || res ==0
+}
+
 func (ev *EtherValue) String() string {
 	decimals := 18
 	bi := ev.value

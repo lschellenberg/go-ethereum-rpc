@@ -83,3 +83,10 @@ func (address *EtherAddress) From32ByteHex(hs *HexString) (*EtherAddress, error)
 
 	return address.FromBytes(b[12:])
 }
+
+func (address *EtherAddress) PadTo32Byte() []byte{
+	nb := make([]byte, 32)
+	copy(nb[12:], address.value[:])
+
+	return nb
+}

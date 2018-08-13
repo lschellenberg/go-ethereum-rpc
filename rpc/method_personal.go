@@ -38,3 +38,13 @@ func (personal *Personal) ListAccounts() ([]rpctypes.HexString, error) {
 func (personal *Personal) NewAccount(password string) (*rpctypes.HexString, error) {
 	return personal.client.RequestHexString(MethodPersonalNewAccount, password)
 }
+
+/*
+	rpc method: personal_sendTransaction
+	Sends transaction and signs it in a single call. The account does not need to be unlocked to make this call, and will not be left unlocked after.
+
+	curl --data '{"method":"personal_sendTransaction","params":[{"from":"0x00a329c0648769a73afac7f9381e08fb43dbea72","to":"0x7c9ef46acd73a8225c417ea1ba69a65a74be0d80","data":"0x0","value":"0x186a0"},"hunter2"],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+ */
+func (personal *Personal) SendTransaction(sendTransactionParams *SendTransaction, password string) (*rpctypes.HexString, error) {
+	return personal.client.RequestHexString(MethodPersonalSendTransaction, sendTransactionParams.ToMap(), password)
+}
